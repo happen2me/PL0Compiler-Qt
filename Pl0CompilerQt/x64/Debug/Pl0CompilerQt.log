@@ -1,8 +1,2 @@
-﻿  Error.cpp
-  GrammarAnalyzer.cpp
-  Instruction.cpp
-  Interpreter.cpp
-  Symbol.cpp
-  Word.cpp
-  WordAnalyzer.cpp
+﻿  Pl0CompilerQt.cpp
   Pl0CompilerQt.vcxproj -> C:\Users\sakamoto\source\repos\Pl0CompilerQt\x64\Debug\Pl0CompilerQt.exe

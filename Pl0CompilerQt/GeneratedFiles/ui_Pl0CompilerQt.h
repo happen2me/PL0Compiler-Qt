@@ -36,6 +36,8 @@ public:
     QAction *action_Build;
     QAction *action_About;
     QAction *action_Clear;
+    QAction *actionUndo;
+    QAction *actionRedo;
     QWidget *centralWidget;
     QGridLayout *gridLayout_2;
     QGridLayout *gridLayout;
@@ -71,6 +73,10 @@ public:
         action_About->setObjectName(QString::fromUtf8("action_About"));
         action_Clear = new QAction(Pl0CompilerQtClass);
         action_Clear->setObjectName(QString::fromUtf8("action_Clear"));
+        actionUndo = new QAction(Pl0CompilerQtClass);
+        actionUndo->setObjectName(QString::fromUtf8("actionUndo"));
+        actionRedo = new QAction(Pl0CompilerQtClass);
+        actionRedo->setObjectName(QString::fromUtf8("actionRedo"));
         centralWidget = new QWidget(Pl0CompilerQtClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout_2 = new QGridLayout(centralWidget);
@@ -79,10 +85,8 @@ public:
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
         gridLayout_2->setContentsMargins(0, 0, 0, 0);
         gridLayout = new QGridLayout();
-        gridLayout->setSpacing(6);
+        gridLayout->setSpacing(3);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        gridLayout->setHorizontalSpacing(3);
-        gridLayout->setVerticalSpacing(4);
         tableWidget = new QTableWidget(centralWidget);
         tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
 
@@ -90,6 +94,9 @@ public:
 
         textEdit = new QTextEdit(centralWidget);
         textEdit->setObjectName(QString::fromUtf8("textEdit"));
+        QFont font;
+        font.setFamily(QString::fromUtf8("Consolas"));
+        textEdit->setFont(font);
 
         gridLayout->addWidget(textEdit, 0, 0, 1, 1);
 
@@ -148,12 +155,18 @@ public:
         menu_File->addAction(action_Open);
         menu_File->addAction(action_Save);
         menu_File->addAction(action_Close);
+        menu_Edit->addAction(actionUndo);
+        menu_Edit->addAction(actionRedo);
         menu_Edit->addAction(action_Clear);
         menu_Run->addAction(action_Run);
         menu_Run->addAction(action_Build);
         menu_Help->addAction(action_About);
 
         retranslateUi(Pl0CompilerQtClass);
+        QObject::connect(actionUndo, SIGNAL(triggered()), textEdit, SLOT(undo()));
+        QObject::connect(actionRedo, SIGNAL(triggered()), textEdit, SLOT(redo()));
+        QObject::connect(action_Open, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(loadFile()));
+        QObject::connect(action_Save, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(save()));
 
         QMetaObject::connectSlotsByName(Pl0CompilerQtClass);
     } // setupUi
@@ -162,12 +175,29 @@ public:
     {
         Pl0CompilerQtClass->setWindowTitle(QApplication::translate("Pl0CompilerQtClass", "Pl0CompilerQt", nullptr));
         action_Open->setText(QApplication::translate("Pl0CompilerQtClass", "&Open", nullptr));
+#ifndef QT_NO_SHORTCUT
+        action_Open->setShortcut(QApplication::translate("Pl0CompilerQtClass", "Ctrl+O", nullptr));
+#endif // QT_NO_SHORTCUT
         action_Save->setText(QApplication::translate("Pl0CompilerQtClass", "&Save", nullptr));
+#ifndef QT_NO_SHORTCUT
+        action_Save->setShortcut(QApplication::translate("Pl0CompilerQtClass", "Ctrl+S", nullptr));
+#endif // QT_NO_SHORTCUT
         action_Close->setText(QApplication::translate("Pl0CompilerQtClass", "&Close", nullptr));
         action_Run->setText(QApplication::translate("Pl0CompilerQtClass", "Build and &Run", nullptr));
+#ifndef QT_NO_SHORTCUT
+        action_Run->setShortcut(QApplication::translate("Pl0CompilerQtClass", "Ctrl+R", nullptr));
+#endif // QT_NO_SHORTCUT
         action_Build->setText(QApplication::translate("Pl0CompilerQtClass", "&Build", nullptr));
         action_About->setText(QApplication::translate("Pl0CompilerQtClass", "&About", nullptr));
         action_Clear->setText(QApplication::translate("Pl0CompilerQtClass", "&Clear", nullptr));
+        actionUndo->setText(QApplication::translate("Pl0CompilerQtClass", "Undo", nullptr));
+#ifndef QT_NO_SHORTCUT
+        actionUndo->setShortcut(QApplication::translate("Pl0CompilerQtClass", "Ctrl+Z", nullptr));
+#endif // QT_NO_SHORTCUT
+        actionRedo->setText(QApplication::translate("Pl0CompilerQtClass", "Redo", nullptr));
+#ifndef QT_NO_SHORTCUT
+        actionRedo->setShortcut(QApplication::translate("Pl0CompilerQtClass", "Ctrl+R", nullptr));
+#endif // QT_NO_SHORTCUT
         menu_File->setTitle(QApplication::translate("Pl0CompilerQtClass", "&File", nullptr));
         menu_Edit->setTitle(QApplication::translate("Pl0CompilerQtClass", "&Edit", nullptr));
         menu_Run->setTitle(QApplication::translate("Pl0CompilerQtClass", "&Run", nullptr));
