@@ -48,3 +48,26 @@ void Pl0CompilerQt::save()
 	out << ui.textEdit->toPlainText();
 	current_file = fileName;
 }
+
+void Pl0CompilerQt::build()
+{
+	if (current_file.isEmpty()) {
+		save();
+	}
+	if (current_file.isEmpty()) {
+		QMessageBox::information(this, tr("Build Error"), tr("Failed to save file"));
+		return;
+	}
+	WordAnalyzer wordAnalyzer(current_file.toStdString());
+	wordAnalyzer.analyze();
+	GrammarAnalyzer grammarAnalyzer(wordAnalyzer.getResult());
+	grammarAnalyzer.runCompile();
+	instructions = grammarAnalyzer.getResults();
+}
+
+void Pl0CompilerQt::buildRun()
+{
+	build();
+	Interpreter interpreter(instructions);
+	interpreter.run();
+}

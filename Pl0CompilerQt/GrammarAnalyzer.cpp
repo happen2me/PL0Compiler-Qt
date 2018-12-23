@@ -38,7 +38,7 @@ GrammarAnalyzer::~GrammarAnalyzer()
 {
 }
 
-void GrammarAnalyzer::emit(Instruction::InstructionType type, int l, int m)
+void GrammarAnalyzer::gen(Instruction::InstructionType type, int l, int m)
 {
 	pcodes.push_back(Instruction(type, l, m));
 }
@@ -112,7 +112,7 @@ void GrammarAnalyzer::SUB_PROC()
 	int stored_tx = getTx();
 	int stored_cx = getCx();
 
-	emit(Instruction::JMP, 0, 0);
+	gen(Instruction::JMP, 0, 0);
 
 	if (current_word.type == Word::KW_CONST) {
 		CONST_DECLARATION();
@@ -131,11 +131,11 @@ void GrammarAnalyzer::SUB_PROC()
 	}
 
 
-	emit(Instruction::INC, 0, dx); // space for var
+	gen(Instruction::INC, 0, dx); // space for var
 
 	STATEMENT();
 
-	emit(Instruction::OPR, 0, Instruction::OT_RET);
+	gen(Instruction::OPR, 0, Instruction::OT_RET);
 
 	lev = stored_lev;
 }
@@ -187,7 +187,7 @@ void GrammarAnalyzer::EXPRESSION()
 	}
 	TERM();
 	if (neg_start) {
-		emit(Instruction::OPR, 0, Instruction::OT_NEG);
+		gen(Instruction::OPR, 0, Instruction::OT_NEG);
 	}
 
 	while (current_word.name == "+" || current_word.name == "-")
@@ -196,10 +196,10 @@ void GrammarAnalyzer::EXPRESSION()
 		read();
 		TERM();
 		if (is_plus) {
-			emit(Instruction::OPR, 0, Instruction::OT_ADD);
+			gen(Instruction::OPR, 0, Instruction::OT_ADD);
 		}
 		else {
-			emit(Instruction::OPR, 0, Instruction::OT_SUB);
+			gen(Instruction::OPR, 0, Instruction::OT_SUB);
 		}
 	}
 }
@@ -210,7 +210,7 @@ void GrammarAnalyzer::CONDITION()
 	if (current_word.type == Word::KW_ODD) {
 		read();
 		EXPRESSION();
-		emit(Instruction::OPR, 0, Instruction::OT_ODD);
+		gen(Instruction::OPR, 0, Instruction::OT_ODD);
 	}
 	else {
 		EXPRESSION();
@@ -223,22 +223,22 @@ void GrammarAnalyzer::CONDITION()
 		switch (opr_type)
 		{
 		case Word::OP_EQUAL:
-			emit(Instruction::OPR, 0, Instruction::OT_EQL);
+			gen(Instruction::OPR, 0, Instruction::OT_EQL);
 			break;
 		case Word::OP_NOT_EQUAL:
-			emit(Instruction::OPR, 0, Instruction::OT_NEQ);
+			gen(Instruction::OPR, 0, Instruction::OT_NEQ);
 			break;
 		case Word::OP_LESS:
-			emit(Instruction::OPR, 0, Instruction::OT_LSS);
+			gen(Instruction::OPR, 0, Instruction::OT_LSS);
 			break;
 		case Word::OP_LESS_EQUAL:
-			emit(Instruction::OPR, 0, Instruction::OT_LEQ);
+			gen(Instruction::OPR, 0, Instruction::OT_LEQ);
 			break;
 		case Word::OP_ABOVE:
-			emit(Instruction::OPR, 0, Instruction::OT_GTR);
+			gen(Instruction::OPR, 0, Instruction::OT_GTR);
 			break;
 		case Word::OP_ABOVE_EQUAL:
-			emit(Instruction::OPR, 0, Instruction::OT_GEQ);
+			gen(Instruction::OPR, 0, Instruction::OT_GEQ);
 			break;
 		default:
 			if (!current_word.isRetionalOperator()) {
@@ -266,10 +266,10 @@ void GrammarAnalyzer::FACTOR()
 		}
 		else {
 			if (table[pos].type == Symbol::CONST) {
-				emit(Instruction::LIT, 0, table[pos].val);
+				gen(Instruction::LIT, 0, table[pos].val);
 			}
 			else if (table[pos].type == Symbol::VAR) {
-				emit(Instruction::LOD, lev - table[pos].level, table[pos].address);
+				gen(Instruction::LOD, lev - table[pos].level, table[pos].address);
 			}
 			else {
 				raiseWrapper(current_word.line, Error::EXPRESSION_CANNOT_CONTAIN_PROC);
@@ -280,7 +280,7 @@ void GrammarAnalyzer::FACTOR()
 	}
 	else if (current_word.type == Word::CONST) {
 
-		emit(Instruction::LIT, 0, current_word.val);
+		gen(Instruction::LIT, 0, current_word.val);
 
 		read();
 
@@ -306,10 +306,10 @@ void GrammarAnalyzer::TERM()
 		FACTOR();
 
 		if (is_multiply) {
-			emit(Instruction::OPR, 0, Instruction::OT_MUL);
+			gen(Instruction::OPR, 0, Instruction::OT_MUL);
 		}
 		else {
-			emit(Instruction::OPR, 0, Instruction::OT_DIV);
+			gen(Instruction::OPR, 0, Instruction::OT_DIV);
 		}
 	}
 }
@@ -459,7 +459,7 @@ void GrammarAnalyzer::ASSIGNMENT_STATEMENT()
 
 	EXPRESSION();
 	if (pos != NOT_FOUND && table[pos].type == Symbol::VAR) {
-		emit(Instruction::STO, lev - table[pos].level, table[pos].address);
+		gen(Instruction::STO, lev - table[pos].level, table[pos].address);
 	}
 }
 
@@ -497,7 +497,7 @@ void GrammarAnalyzer::CONDITIONAL_STATEMENT()
 
 	int jpc_cx = getCx();
 
-	emit(Instruction::JPC, 0, 0);
+	gen(Instruction::JPC, 0, 0);
 
 	STATEMENT();
 	if (!current_word.isEmptyWord() && current_word.type == Word::KW_ELSE) {
@@ -507,7 +507,7 @@ void GrammarAnalyzer::CONDITIONAL_STATEMENT()
 
 		jpc_cx = getCx(); // change to jmp_cx
 
-		emit(Instruction::JMP, 0, 0);
+		gen(Instruction::JMP, 0, 0);
 
 		STATEMENT();
 	}
@@ -525,7 +525,7 @@ void GrammarAnalyzer::WHILE_STATEMENT()
 
 	int jpc_cx = getCx();
 
-	emit(Instruction::JPC, 0, 0);
+	gen(Instruction::JPC, 0, 0);
 
 	//confirm(Word::KW_DO);
 	test(current_word.line, Word::KW_DO, Error::EXPECT_DO);
@@ -536,7 +536,7 @@ void GrammarAnalyzer::WHILE_STATEMENT()
 
 	STATEMENT();
 
-	emit(Instruction::JMP, 0, condition_cx);
+	gen(Instruction::JMP, 0, condition_cx);
 	pcodes[jpc_cx].m = getCx(); // points to code after statement
 }
 
@@ -556,7 +556,7 @@ void GrammarAnalyzer::CALL_STATEMENT()
 			raiseWrapper(current_word.line, Error::UNDECLARED_IDENTIFIER);
 		}
 		else if (table[pos].type == Symbol::PROC) {
-			emit(Instruction::CALL, lev - table[pos].level, table[pos].address);
+			gen(Instruction::CALL, lev - table[pos].level, table[pos].address);
 		}
 		else {
 			raiseWrapper(current_word.line, Error::CANNOT_CALL_VAR_OR_CONST);
@@ -584,7 +584,7 @@ void GrammarAnalyzer::READ_STATEMENT()
 
 	while (checkType(Word::IDENTIFIER))
 	{
-		emit(Instruction::RED, 0, 0); //读取元素置于栈顶
+		gen(Instruction::RED, 0, 0); //读取元素置于栈顶
 
 		int pos = position(current_word.name, lev);
 
@@ -595,7 +595,7 @@ void GrammarAnalyzer::READ_STATEMENT()
 			raiseWrapper(current_word.line, Error::ASSIGNED_TO_CONST_OR_PROC);
 		}
 		else {
-			emit(Instruction::STO, lev - table[pos].level, table[pos].address); //把栈顶元素写入指定位置
+			gen(Instruction::STO, lev - table[pos].level, table[pos].address); //把栈顶元素写入指定位置
 		}
 
 		read();
@@ -619,11 +619,11 @@ void GrammarAnalyzer::WRITE_STATEMENT()
 	confirmName("(");
 	read();
 	EXPRESSION();
-	emit(Instruction::WRT, 0, 1);
+	gen(Instruction::WRT, 0, 1);
 	while (current_word.name == ",") {
 		read();
 		EXPRESSION();
-		emit(Instruction::WRT, 0, 1);
+		gen(Instruction::WRT, 0, 1);
 	}
 	confirmName(")");
 	read();
@@ -647,7 +647,7 @@ void GrammarAnalyzer::REPEAT_STATEMENT()
 	read();
 	CONDITION();
 
-	emit(Instruction::JPC, 0, statemetn_cx);
+	gen(Instruction::JPC, 0, statemetn_cx);
 
 }
 

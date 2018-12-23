@@ -58,7 +58,7 @@ public:
     {
         if (Pl0CompilerQtClass->objectName().isEmpty())
             Pl0CompilerQtClass->setObjectName(QString::fromUtf8("Pl0CompilerQtClass"));
-        Pl0CompilerQtClass->resize(709, 498);
+        Pl0CompilerQtClass->resize(709, 500);
         action_Open = new QAction(Pl0CompilerQtClass);
         action_Open->setObjectName(QString::fromUtf8("action_Open"));
         action_Save = new QAction(Pl0CompilerQtClass);
@@ -167,6 +167,9 @@ public:
         QObject::connect(actionRedo, SIGNAL(triggered()), textEdit, SLOT(redo()));
         QObject::connect(action_Open, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(loadFile()));
         QObject::connect(action_Save, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(save()));
+        QObject::connect(action_Close, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(close()));
+        QObject::connect(action_Build, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(build()));
+        QObject::connect(action_Run, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(buildRun()));
 
         QMetaObject::connectSlotsByName(Pl0CompilerQtClass);
     } // setupUi

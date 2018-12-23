@@ -27,7 +27,7 @@ private:
 	std::vector<Instruction> pcodes;
 	int lev;
 	int error_count;
-	void emit(Instruction::InstructionType type, int l, int m);
+	void gen(Instruction::InstructionType type, int l, int m);
 
 	bool read();
 

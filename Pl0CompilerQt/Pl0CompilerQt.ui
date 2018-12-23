@@ -270,9 +270,43 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_Build</sender>
+   <signal>triggered()</signal>
+   <receiver>Pl0CompilerQtClass</receiver>
+   <slot>build()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>354</x>
+     <y>249</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>action_Run</sender>
+   <signal>triggered()</signal>
+   <receiver>Pl0CompilerQtClass</receiver>
+   <slot>buildRun()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>354</x>
+     <y>249</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
   <slot>save()</slot>
+  <slot>build()</slot>
+  <slot>buildRun()</slot>
  </slots>
 </ui>
