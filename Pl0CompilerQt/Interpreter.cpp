@@ -3,7 +3,8 @@
 
 #define DEBUG 0
 
-Interpreter::Interpreter()
+Interpreter::Interpreter():
+	log_ostream(std::cout)
 {
 }
 
@@ -11,7 +12,17 @@ Interpreter::Interpreter(std::vector<Instruction> pcodes) :
 	instructions(pcodes),
 	pc(0),
 	bp(1),
-	sp(0)
+	sp(0),
+	log_ostream(std::cout)
+{
+}
+
+Interpreter::Interpreter(std::vector<Instruction> pcodes, std::ostream log_ostream):
+	instructions(pcodes),
+	pc(0),
+	bp(1),
+	sp(0),
+	log_ostream(log_ostream)
 {
 }
 
@@ -24,24 +35,24 @@ void Interpreter::run()
 {
 	int time = 0;
 	if(DEBUG)
-		std::cout << "\nline\top\tl\tm\tpc\tbp\tsp\tstack(before execution)" << std::endl;
+		log_ostream << "\nline\top\tl\tm\tpc\tbp\tsp\tstack(before execution)" << std::endl;
 	while (bp != 0 && time < 100) {
 		time++;
 		fetch();
 		
 		if (DEBUG) {
-			std::cout << time << "\t";
-			snapshotStack(std::cout);
+			log_ostream << time << "\t";
+			snapshotStack(log_ostream);
 		}
 		exe();
 	}
 	if (DEBUG) {
-		std::cout << "\t\t\t\t";
-		std::cout << pc << "\t" << bp << "\t" << sp << "\t";
+		log_ostream << "\t\t\t\t";
+		log_ostream << pc << "\t" << bp << "\t" << sp << "\t";
 		for (int i = 0; i <= sp; i++) {
-			std::cout << data[i] << " ";
+			log_ostream << data[i] << " ";
 		}
-		std::cout << std::endl;
+		log_ostream << std::endl;
 	}
 	
 }
@@ -81,8 +92,8 @@ void Interpreter::exe()
 		}
 		break;
 	case Instruction::WRT:
-		std::cout << "\033[1;33m";
-		std::cout << pop() << "\033[0m\n" << std::endl;
+		log_ostream << "\033[1;33m";
+		log_ostream << pop() << "\033[0m\n" << std::endl;
 		break;
 	case Instruction::RED:
 		int x;

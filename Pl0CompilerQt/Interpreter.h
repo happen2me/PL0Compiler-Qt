@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <ostream>
 #include "Instruction.h"
 
 #define MAX_RUN_STACK_HEIGHT 1000
@@ -10,6 +11,7 @@ class Interpreter
 public:
 	Interpreter();
 	Interpreter(std::vector<Instruction> pcodes);
+	Interpreter(std::vector<Instruction> pcodes, std::ostream log_ostream);
 	~Interpreter();
 
 	void run();
@@ -21,6 +23,7 @@ private:
 	int bp; // base pointer
 	int sp; // stack pointer
 	Instruction ir; // instruction register
+	std::ostream& log_ostream;
 
 	void exe();
 	void opr(Instruction::OperationType opr_type);

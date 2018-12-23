@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <stack>
+#include <ostream>
 #include "WordAnalyzer.h"
 #include "Symbol.h"
 #include "Instruction.h"
@@ -11,6 +12,7 @@ class GrammarAnalyzer
 public:
 	GrammarAnalyzer();
 	GrammarAnalyzer(const std::vector<Word>& wordList);
+	GrammarAnalyzer(const std::vector<Word>& wordList, std::ostream& log_stream);
 	virtual ~GrammarAnalyzer();
 	void runCompile();
 	std::vector<Instruction> getResults();
@@ -20,6 +22,7 @@ public:
 
 private:
 	std::stack<Word> word_stack;
+	std::ostream& log_stream;
 	Word current_word;
 	Word next_word; // In fact it's never been used
 	/*For parsing stage*/

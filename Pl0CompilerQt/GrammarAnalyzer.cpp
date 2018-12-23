@@ -3,7 +3,6 @@
 #include <iostream>
 #include <fstream>
 #include "Error.h"
-using namespace std;
 
 
 #define DEBUG 1
@@ -17,18 +16,33 @@ using namespace std;
 
 #define NOT_FOUND -1
 
-GrammarAnalyzer::GrammarAnalyzer()
+GrammarAnalyzer::GrammarAnalyzer():
+	log_stream(std::cout)
 {
 }
 
 GrammarAnalyzer::GrammarAnalyzer(const std::vector<Word>& wordList) :
+	word_stack(),
+	error_count(0),
+	log_stream(std::cout)
+{
+	for (int i = wordList.size() - 1; i >= 0; i--) {
+		word_stack.push(wordList[i]);
+		if (DEBUG && VERBOSE) {
+			log_stream << "pushed " << word_stack.top().name << std::endl;
+		}
+	}
+}
+
+GrammarAnalyzer::GrammarAnalyzer(const std::vector<Word>& wordList, std::ostream & log_stream):
+	log_stream(log_stream),
 	word_stack(),
 	error_count(0)
 {
 	for (int i = wordList.size() - 1; i >= 0; i--) {
 		word_stack.push(wordList[i]);
 		if (DEBUG && VERBOSE) {
-			std::cout << "pushed " << word_stack.top().name << std::endl;
+			log_stream << "pushed " << word_stack.top().name << std::endl;
 		}
 	}
 }
@@ -48,7 +62,7 @@ bool GrammarAnalyzer::read()
 	if (!word_stack.empty()) {
 		current_word = word_stack.top();
 		if (VERBOSE) {
-			std::cout << "Read word " << current_word.name << ": " << current_word.val << std::endl;
+			log_stream << "Read word " << current_word.name << ": " << current_word.val << std::endl;
 		}
 
 		word_stack.pop();
@@ -86,11 +100,11 @@ void GrammarAnalyzer::MAIN_PROC()
 
 	}
 	catch (std::exception e) {
-		std::cout << e.what() << std::endl;
+		log_stream << e.what() << std::endl;
 	}
 
 	if (word_stack.empty()) {
-		std::cout << "\nGrammar Analyze finished" << std::endl;
+		log_stream << "\nGrammar Analyze finished" << std::endl;
 	}
 	else {
 		std::cerr << "\nThere are still " << word_stack.size() << " words remains in statck" << std::endl;
@@ -454,7 +468,7 @@ void GrammarAnalyzer::ASSIGNMENT_STATEMENT()
 	confirm(Word::OP_ASSIGN);
 	read();
 	if (DEBUG && VERBOSE) {
-		cout << "!!!! cur.type is " << Word::translator[current_word.type] << " name is " << current_word.name << endl;
+		log_stream << "!!!! cur.type is " << Word::translator[current_word.type] << " name is " << current_word.name << std::endl;
 	}
 
 	EXPRESSION();
@@ -531,7 +545,7 @@ void GrammarAnalyzer::WHILE_STATEMENT()
 	test(current_word.line, Word::KW_DO, Error::EXPECT_DO);
 
 	if (DEBUG && VERBOSE) {
-		std::cout << "before do  cur is " << current_word.name << std::endl;
+		log_stream << "before do  cur is " << current_word.name << std::endl;
 	}
 
 	STATEMENT();
@@ -741,7 +755,7 @@ void GrammarAnalyzer::printSymbolTable(std::ostream& out)
 
 void GrammarAnalyzer::printPcodes(std::ostream& out)
 {
-	out << endl;
+	out << std::endl;
 	for (int i = 0; i < (int)pcodes.size(); i++) {
 		out << i << "\t" << Instruction::translator[pcodes[i].op] << "\t" << pcodes[i].l << "\t";
 		if (pcodes[i].op == Instruction::OPR) {
@@ -781,7 +795,7 @@ bool GrammarAnalyzer::test(int line, Word::WordType word_type, Error::ErrorType 
 	}
 	else {
 		raiseWrapper(line, error_type);
-		std::cout << "\t " << Word::translator[word_type] << " expected" << std::endl;
+		log_stream << "\t " << Word::translator[word_type] << " expected" << std::endl;
 		return false;
 	}
 }
