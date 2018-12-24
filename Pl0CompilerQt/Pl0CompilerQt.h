@@ -24,6 +24,7 @@ public slots:
 	void save();
 	void build();
 	void buildRun();
+	void promptAbout();
 
 private:
 	Ui::Pl0CompilerQtClass ui;

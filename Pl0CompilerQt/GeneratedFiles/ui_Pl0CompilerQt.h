@@ -192,6 +192,7 @@ public:
         QObject::connect(action_Close, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(close()));
         QObject::connect(action_Build, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(build()));
         QObject::connect(action_Run, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(buildRun()));
+        QObject::connect(action_About, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(promptAbout()));
 
         QMetaObject::connectSlotsByName(Pl0CompilerQtClass);
     } // setupUi
