@@ -2,25 +2,22 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
-#include "ConsoleStream.h"
 #include <iostream>
 #include <QDebug>
 
-
-
-
 Pl0CompilerQt::Pl0CompilerQt(QWidget *parent)
-	: QMainWindow(parent)
+	: QMainWindow(parent),
+	buffer(),
+	console_stream(&buffer)
 {
+
+
 	ui.setupUi(this);
-	MyBuf buff(ui.console);
-	//std::stringbuf buff;
-	std::ostream stream(&buff);
-	stream << "TEST" << std::flush;
+	//console_stream << "TEST" << std::flush;
+	buffer.setConsole(ui.console);
 }
 
 void Pl0CompilerQt::loadFile() {
-
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
 		"Documents",
 		tr("Text (*.txt *.pl0);;All Files(*)"));
@@ -71,13 +68,42 @@ void Pl0CompilerQt::build()
 	}
 	WordAnalyzer wordAnalyzer(current_file.toStdString());
 	wordAnalyzer.analyze();
-	GrammarAnalyzer grammarAnalyzer(wordAnalyzer.getResult());
+	GrammarAnalyzer grammarAnalyzer(wordAnalyzer.getResult(), console_stream);
 	qDebug() << "Words num: ";
 	qDebug() << grammarAnalyzer.getResults().size() << "\n";
 	grammarAnalyzer.runCompile();
 	instructions = grammarAnalyzer.getResults();
 	qDebug() << grammarAnalyzer.getResults().size();
-	
+	ui.tableWidget->setRowCount(instructions.size());
+	QStringList labels;
+	for (unsigned int i = 0; i < instructions.size(); i++) {
+		labels << QString::number(i);
+		for (unsigned int column = 0; column < 3; column++) {			
+			QTableWidgetItem* newItem = new QTableWidgetItem();
+			switch (column)
+			{
+			case 0:
+				newItem->setText(QString::fromStdString(Instruction::translator[instructions[i].op]));
+				ui.tableWidget->setItem(i, column, newItem);
+				break;
+			case 1:
+				newItem->setText(QString::number(instructions[i].l));
+				ui.tableWidget->setItem(i, column, newItem);
+				break;
+			case 2:
+				if(instructions[i].op == Instruction::OPR)
+					newItem->setText(QString::fromStdString(Instruction::op_translator[(Instruction::OperationType)instructions[i].m]));
+				else
+					newItem->setText(QString::number(instructions[i].m));
+				ui.tableWidget->setItem(i, column, newItem);
+				break;
+			default:
+				break;
+			}
+			
+		}
+	}
+	ui.tableWidget->setVerticalHeaderLabels(labels);
 }
 
 void Pl0CompilerQt::buildRun()
@@ -88,7 +114,7 @@ void Pl0CompilerQt::buildRun()
 	ui.console->insertPlainText("Start running\n");
 	ui.console->moveCursor(QTextCursor::End);
 	build();
-	Interpreter interpreter(instructions, ofs);
+	Interpreter interpreter(instructions, console_stream, ui.console);
 
 	ofs.close();
 	std::cout << "";
@@ -96,5 +122,7 @@ void Pl0CompilerQt::buildRun()
 	ui.console->moveCursor(QTextCursor::End);
 	ui.console->insertPlainText("Program exits.\n");
 	ui.console->moveCursor(QTextCursor::End);
+	
+	
 }
 

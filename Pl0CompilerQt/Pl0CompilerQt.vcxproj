@@ -113,8 +113,6 @@
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Console.cpp" />
-    <ClCompile Include="ConsoleStream.cpp" />
     <ClCompile Include="Error.cpp" />
     <ClCompile Include="GrammarAnalyzer.cpp" />
     <ClCompile Include="Instruction.cpp" />
@@ -138,18 +136,17 @@
     <ResourceCompile Include="Pl0CompilerQt.rc" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Console.h">
+    <ClInclude Include="DebugStream.h" />
+    <ClInclude Include="Error.h" />
+    <ClInclude Include="GrammarAnalyzer.h" />
+    <ClInclude Include="Instruction.h" />
+    <QtMoc Include="Interpreter.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCharts;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DLL;QT_CHARTS_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB</Define>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCharts;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CHARTS_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB</Define>
     </QtMoc>
-    <ClInclude Include="ConsoleStream.h" />
-    <ClInclude Include="DebugStream.h" />
-    <ClInclude Include="Error.h" />
-    <ClInclude Include="GrammarAnalyzer.h" />
-    <ClInclude Include="Instruction.h" />
-    <ClInclude Include="Interpreter.h" />
+    <ClInclude Include="OutputBuffer.h" />
     <ClInclude Include="Symbol.h" />
     <ClInclude Include="Word.h" />
     <ClInclude Include="WordAnalyzer.h" />

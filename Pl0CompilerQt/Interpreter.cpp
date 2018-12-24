@@ -1,7 +1,10 @@
 #include <iostream>
 #include "Interpreter.h"
+#include <stdlib.h>
+#include <QThread>
+#include <QTextStream>
 
-#define DEBUG 1
+#define DEBUG 0
 
 Interpreter::Interpreter():
 	log_ostream(std::cout)
@@ -18,13 +21,13 @@ Interpreter::Interpreter(std::vector<Instruction> pcodes) :
 {
 }
 
-Interpreter::Interpreter(std::vector<Instruction> pcodes, std::ostream& log_ostream):
+Interpreter::Interpreter(std::vector<Instruction> pcodes, std::ostream& log_ostream, QTextEdit* textEdit):
 	instructions(pcodes),
 	pc(0),
 	bp(1),
 	sp(0),
 	log_ostream(log_ostream),
-	text_edit(nullptr)
+	text_edit(textEdit)
 {
 }
 
@@ -68,6 +71,9 @@ void Interpreter::run()
 void Interpreter::exe()
 {
 	int x;
+	QString word;
+	QTextStream qtin(stdin);
+	QString line;
 	switch (ir.op)
 	{
 	case Instruction::LIT:
@@ -102,9 +108,9 @@ void Interpreter::exe()
 		break;
 	case Instruction::WRT:
 		x = pop();
-		log_ostream << "\033[1;33m";
-		log_ostream << x << "\033[0m\n" << std::endl;
-
+		//log_ostream << "\033[1;33m";
+		//log_ostream << x << "\033[0m\n" << std::endl;
+		log_ostream << x << std::endl;
 		if (text_edit) {
 			text_edit->moveCursor(QTextCursor::End);
 			text_edit->insertPlainText(QString::number(x));
@@ -114,12 +120,29 @@ void Interpreter::exe()
 
 		break;
 	case Instruction::RED:
-		x;
-		std::cin >> x;
-		push(x);
+
+		
+		line = qtin.readLine();  // This is how you read the entire line		
+		qtin >> word;    // This is how you read a word (separated by space) at a time.
+		//std::cin >> x;
+		//line_read = false;
+		//connect(text_edit, SIGNAL(textChanged()), this, SLOT(handleUserInput(const QString&)));
+		//while (!line_read)
+		//{
+		//	QThread::sleep(10);
+		//}
+		bool ok;
+		x = word.toInt(&ok);
+		if (ok) {
+			//x = text_edit->toPlainText().toInt();
+			push(x);
+		}
+		else {
+			log_ostream << "Error input" << std::endl;
+		}
 		break;
 	default:
-		std::cerr << "undefined operater type" << std::endl;
+		log_ostream << "undefined operater type" << std::endl;
 		break;
 	}
 }
@@ -245,4 +268,9 @@ void Interpreter::snapshotStack(std::ostream& out)
 		out << data[i] << " ";
 	}
 	out << std::endl;
+}
+
+void Interpreter::handleUserInput(const QString & text)
+{
+	line_read = true;
 }

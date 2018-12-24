@@ -8,19 +8,7 @@
 #include "WordAnalyzer.h"
 #include "GrammarAnalyzer.h"
 #include "Interpreter.h"
-
-class MyBuf : public std::stringbuf
-{
-public:
-	QTextEdit* console;
-	MyBuf(QTextEdit* textEdit) : std::stringbuf() {
-		console = textEdit;
-	}
-	virtual int sync() {
-		console->append(QString::fromStdString(this->str()));
-		return 0;
-	}
-};
+#include "OutputBuffer.h"
 
 class Pl0CompilerQt : public QMainWindow
 {
@@ -42,4 +30,6 @@ private:
 	QString current_file;
 	std::vector<Symbol> symbol_table;
 	std::vector<Instruction> instructions;
+	OutputBuffer buffer;
+	std::ostream console_stream;
 };

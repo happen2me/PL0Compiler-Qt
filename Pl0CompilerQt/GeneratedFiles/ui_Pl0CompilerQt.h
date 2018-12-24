@@ -58,7 +58,7 @@ public:
     {
         if (Pl0CompilerQtClass->objectName().isEmpty())
             Pl0CompilerQtClass->setObjectName(QString::fromUtf8("Pl0CompilerQtClass"));
-        Pl0CompilerQtClass->resize(709, 500);
+        Pl0CompilerQtClass->resize(949, 714);
         action_Open = new QAction(Pl0CompilerQtClass);
         action_Open->setObjectName(QString::fromUtf8("action_Open"));
         action_Save = new QAction(Pl0CompilerQtClass);
@@ -111,6 +111,7 @@ public:
 
         console = new QTextEdit(centralWidget);
         console->setObjectName(QString::fromUtf8("console"));
+        console->setFont(font);
         console->setContextMenuPolicy(Qt::PreventContextMenu);
         console->setTabStopWidth(80);
 
@@ -131,11 +132,12 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(tableWidget->sizePolicy().hasHeightForWidth());
         tableWidget->setSizePolicy(sizePolicy);
+        tableWidget->setFont(font);
         tableWidget->setSortingEnabled(false);
         tableWidget->setCornerButtonEnabled(true);
         tableWidget->horizontalHeader()->setCascadingSectionResizes(true);
-        tableWidget->horizontalHeader()->setDefaultSectionSize(60);
-        tableWidget->horizontalHeader()->setStretchLastSection(true);
+        tableWidget->horizontalHeader()->setDefaultSectionSize(68);
+        tableWidget->horizontalHeader()->setStretchLastSection(false);
         tableWidget->verticalHeader()->setCascadingSectionResizes(false);
         tableWidget->verticalHeader()->setStretchLastSection(true);
 
@@ -151,7 +153,7 @@ public:
         Pl0CompilerQtClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(Pl0CompilerQtClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 709, 26));
+        menuBar->setGeometry(QRect(0, 0, 949, 26));
         menu_File = new QMenu(menuBar);
         menu_File->setObjectName(QString::fromUtf8("menu_File"));
         menu_Edit = new QMenu(menuBar);

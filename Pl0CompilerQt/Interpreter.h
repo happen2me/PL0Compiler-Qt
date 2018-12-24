@@ -3,16 +3,19 @@
 #include <string>
 #include <ostream>
 #include <QTextEdit>
+#include <QLineEdit>
 #include "Instruction.h"
 
 #define MAX_RUN_STACK_HEIGHT 1000
 
-class Interpreter
+class Interpreter : public QObject
 {
+	Q_OBJECT
+
 public:
 	Interpreter();
 	Interpreter(std::vector<Instruction> pcodes);
-	Interpreter(std::vector<Instruction> pcodes, std::ostream& log_ostream);
+	Interpreter(std::vector<Instruction> pcodes, std::ostream& log_ostream, QTextEdit* textEdit);
 	Interpreter(std::vector<Instruction> pcodes, QTextEdit* textEdit);
 	~Interpreter();
 
@@ -27,6 +30,7 @@ private:
 	Instruction ir; // instruction register
 	std::ostream& log_ostream;
 	QTextEdit* text_edit;
+	bool line_read;
 
 	void exe();
 	void opr(Instruction::OperationType opr_type);
@@ -35,5 +39,6 @@ private:
 	int pop();
 	bool fetch(); // fetch an instruction into ir
 	void snapshotStack(std::ostream& out);
+	void handleUserInput(const QString& text);
 };
 

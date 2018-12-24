@@ -57,18 +57,12 @@
     <ClCompile Include="WordAnalyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Console.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Pl0CompilerQt.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Console.h">
+    <QtMoc Include="Interpreter.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -95,9 +89,6 @@
     <ClInclude Include="GrammarAnalyzer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Interpreter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Symbol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -107,10 +98,10 @@
     <ClInclude Include="WordAnalyzer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleStream.h">
+    <ClInclude Include="DebugStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DebugStream.h">
+    <ClInclude Include="OutputBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
