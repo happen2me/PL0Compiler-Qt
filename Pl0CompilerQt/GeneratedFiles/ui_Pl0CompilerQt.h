@@ -41,11 +41,11 @@ public:
     QWidget *centralWidget;
     QGridLayout *gridLayout_2;
     QGridLayout *gridLayout;
-    QTableWidget *tableWidget;
-    QTextEdit *textEdit;
     QFrame *line;
-    QTextEdit *textEdit_2;
     QFrame *line_2;
+    QTextEdit *textEdit;
+    QTextEdit *console;
+    QTableWidget *tableWidget;
     QMenuBar *menuBar;
     QMenu *menu_File;
     QMenu *menu_Edit;
@@ -87,10 +87,19 @@ public:
         gridLayout = new QGridLayout();
         gridLayout->setSpacing(3);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        tableWidget = new QTableWidget(centralWidget);
-        tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
+        line = new QFrame(centralWidget);
+        line->setObjectName(QString::fromUtf8("line"));
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
 
-        gridLayout->addWidget(tableWidget, 0, 2, 1, 1);
+        gridLayout->addWidget(line, 1, 0, 1, 3);
+
+        line_2 = new QFrame(centralWidget);
+        line_2->setObjectName(QString::fromUtf8("line_2"));
+        line_2->setFrameShape(QFrame::VLine);
+        line_2->setFrameShadow(QFrame::Sunken);
+
+        gridLayout->addWidget(line_2, 0, 1, 1, 1);
 
         textEdit = new QTextEdit(centralWidget);
         textEdit->setObjectName(QString::fromUtf8("textEdit"));
@@ -100,26 +109,37 @@ public:
 
         gridLayout->addWidget(textEdit, 0, 0, 1, 1);
 
-        line = new QFrame(centralWidget);
-        line->setObjectName(QString::fromUtf8("line"));
-        line->setFrameShape(QFrame::HLine);
-        line->setFrameShadow(QFrame::Sunken);
+        console = new QTextEdit(centralWidget);
+        console->setObjectName(QString::fromUtf8("console"));
+        console->setContextMenuPolicy(Qt::PreventContextMenu);
+        console->setTabStopWidth(80);
 
-        gridLayout->addWidget(line, 1, 0, 1, 3);
+        gridLayout->addWidget(console, 2, 0, 1, 3);
 
-        textEdit_2 = new QTextEdit(centralWidget);
-        textEdit_2->setObjectName(QString::fromUtf8("textEdit_2"));
-        textEdit_2->setContextMenuPolicy(Qt::PreventContextMenu);
-        textEdit_2->setTabStopWidth(80);
+        tableWidget = new QTableWidget(centralWidget);
+        if (tableWidget->columnCount() < 3)
+            tableWidget->setColumnCount(3);
+        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
+        tableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
+        tableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
+        QTableWidgetItem *__qtablewidgetitem2 = new QTableWidgetItem();
+        tableWidget->setHorizontalHeaderItem(2, __qtablewidgetitem2);
+        tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(tableWidget->sizePolicy().hasHeightForWidth());
+        tableWidget->setSizePolicy(sizePolicy);
+        tableWidget->setSortingEnabled(false);
+        tableWidget->setCornerButtonEnabled(true);
+        tableWidget->horizontalHeader()->setCascadingSectionResizes(true);
+        tableWidget->horizontalHeader()->setDefaultSectionSize(60);
+        tableWidget->horizontalHeader()->setStretchLastSection(true);
+        tableWidget->verticalHeader()->setCascadingSectionResizes(false);
+        tableWidget->verticalHeader()->setStretchLastSection(true);
 
-        gridLayout->addWidget(textEdit_2, 2, 0, 1, 3);
-
-        line_2 = new QFrame(centralWidget);
-        line_2->setObjectName(QString::fromUtf8("line_2"));
-        line_2->setFrameShape(QFrame::VLine);
-        line_2->setFrameShadow(QFrame::Sunken);
-
-        gridLayout->addWidget(line_2, 0, 1, 1, 1);
+        gridLayout->addWidget(tableWidget, 0, 2, 1, 1);
 
         gridLayout->setRowStretch(0, 3);
         gridLayout->setRowStretch(2, 1);
@@ -201,6 +221,12 @@ public:
 #ifndef QT_NO_SHORTCUT
         actionRedo->setShortcut(QApplication::translate("Pl0CompilerQtClass", "Ctrl+R", nullptr));
 #endif // QT_NO_SHORTCUT
+        QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
+        ___qtablewidgetitem->setText(QApplication::translate("Pl0CompilerQtClass", "OP", nullptr));
+        QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
+        ___qtablewidgetitem1->setText(QApplication::translate("Pl0CompilerQtClass", "L", nullptr));
+        QTableWidgetItem *___qtablewidgetitem2 = tableWidget->horizontalHeaderItem(2);
+        ___qtablewidgetitem2->setText(QApplication::translate("Pl0CompilerQtClass", "A", nullptr));
         menu_File->setTitle(QApplication::translate("Pl0CompilerQtClass", "&File", nullptr));
         menu_Edit->setTitle(QApplication::translate("Pl0CompilerQtClass", "&Edit", nullptr));
         menu_Run->setTitle(QApplication::translate("Pl0CompilerQtClass", "&Run", nullptr));

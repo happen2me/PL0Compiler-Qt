@@ -57,9 +57,18 @@
     <ClCompile Include="WordAnalyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ConsoleStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Pl0CompilerQt.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Console.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -96,6 +105,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WordAnalyzer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Interpreter.h"
 
-#define DEBUG 0
+#define DEBUG 1
 
 Interpreter::Interpreter():
 	log_ostream(std::cout)
@@ -13,17 +13,25 @@ Interpreter::Interpreter(std::vector<Instruction> pcodes) :
 	pc(0),
 	bp(1),
 	sp(0),
-	log_ostream(std::cout)
+	log_ostream(std::cout),
+	text_edit(nullptr)
 {
 }
 
-Interpreter::Interpreter(std::vector<Instruction> pcodes, std::ostream log_ostream):
+Interpreter::Interpreter(std::vector<Instruction> pcodes, std::ostream& log_ostream):
 	instructions(pcodes),
 	pc(0),
 	bp(1),
 	sp(0),
-	log_ostream(log_ostream)
+	log_ostream(log_ostream),
+	text_edit(nullptr)
 {
+}
+
+Interpreter::Interpreter(std::vector<Instruction> pcodes, QTextEdit * textEdit):
+	Interpreter(pcodes)
+{
+	this->text_edit = textEdit;
 }
 
 
@@ -59,6 +67,7 @@ void Interpreter::run()
 
 void Interpreter::exe()
 {
+	int x;
 	switch (ir.op)
 	{
 	case Instruction::LIT:
@@ -92,11 +101,20 @@ void Interpreter::exe()
 		}
 		break;
 	case Instruction::WRT:
+		x = pop();
 		log_ostream << "\033[1;33m";
-		log_ostream << pop() << "\033[0m\n" << std::endl;
+		log_ostream << x << "\033[0m\n" << std::endl;
+
+		if (text_edit) {
+			text_edit->moveCursor(QTextCursor::End);
+			text_edit->insertPlainText(QString::number(x));
+			text_edit->insertPlainText("\n");
+			text_edit->moveCursor(QTextCursor::End);
+		}
+
 		break;
 	case Instruction::RED:
-		int x;
+		x;
 		std::cin >> x;
 		push(x);
 		break;

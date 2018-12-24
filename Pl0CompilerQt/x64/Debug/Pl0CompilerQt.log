@@ -1,7 +1,2 @@
-﻿  moc_Pl0CompilerQt.cpp
-  Error.cpp
-  GrammarAnalyzer.cpp
-  Interpreter.cpp
-  Pl0CompilerQt.cpp
-  main.cpp
+﻿  Pl0CompilerQt.cpp
   Pl0CompilerQt.vcxproj -> C:\Users\sakamoto\source\repos\Pl0CompilerQt\x64\Debug\Pl0CompilerQt.exe

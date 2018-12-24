@@ -2,14 +2,25 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
+#include "ConsoleStream.h"
+#include <iostream>
+#include <QDebug>
+
+
+
 
 Pl0CompilerQt::Pl0CompilerQt(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
+	MyBuf buff(ui.console);
+	//std::stringbuf buff;
+	std::ostream stream(&buff);
+	stream << "TEST" << std::flush;
 }
 
 void Pl0CompilerQt::loadFile() {
+
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
 		"Documents",
 		tr("Text (*.txt *.pl0);;All Files(*)"));
@@ -61,13 +72,29 @@ void Pl0CompilerQt::build()
 	WordAnalyzer wordAnalyzer(current_file.toStdString());
 	wordAnalyzer.analyze();
 	GrammarAnalyzer grammarAnalyzer(wordAnalyzer.getResult());
+	qDebug() << "Words num: ";
+	qDebug() << grammarAnalyzer.getResults().size() << "\n";
 	grammarAnalyzer.runCompile();
 	instructions = grammarAnalyzer.getResults();
+	qDebug() << grammarAnalyzer.getResults().size();
+	
 }
 
 void Pl0CompilerQt::buildRun()
 {
+	std::ofstream ofs("output/log.txt", std::ofstream::out);
+
+	ui.console->moveCursor(QTextCursor::End);
+	ui.console->insertPlainText("Start running\n");
+	ui.console->moveCursor(QTextCursor::End);
 	build();
-	Interpreter interpreter(instructions);
+	Interpreter interpreter(instructions, ofs);
+
+	ofs.close();
+	std::cout << "";
 	interpreter.run();
+	ui.console->moveCursor(QTextCursor::End);
+	ui.console->insertPlainText("Program exits.\n");
+	ui.console->moveCursor(QTextCursor::End);
 }
+
