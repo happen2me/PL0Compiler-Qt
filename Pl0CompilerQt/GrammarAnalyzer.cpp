@@ -107,8 +107,8 @@ void GrammarAnalyzer::MAIN_PROC()
 		log_stream << "\nGrammar Analyze finished" << std::endl;
 	}
 	else {
-		std::cerr << "\nThere are still " << word_stack.size() << " words remains in statck" << std::endl;
-		std::cerr << "cur is in line " << current_word.line + 1 << std::endl;
+		log_stream << "\nThere are still " << word_stack.size() << " words remains in statck" << std::endl;
+		log_stream << "cur is in line " << current_word.line + 1 << std::endl;
 	}
 }
 
@@ -810,7 +810,7 @@ void GrammarAnalyzer::raiseWrapper(int line, Error::ErrorType errorType, std::st
 {
 	error_count++;
 	Error::raise(line, errorType);
-	std::cerr << "\t" << current_word.name << " read, expect " << expectation << std::endl;
+	log_stream << "\t" << current_word.name << " read, expect " << expectation << std::endl;
 }
 
 bool GrammarAnalyzer::errorHappened()

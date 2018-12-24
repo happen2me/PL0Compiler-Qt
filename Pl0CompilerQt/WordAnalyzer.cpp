@@ -248,7 +248,7 @@ void WordAnalyzer::readFile(std::string filename)
 		std::ifstream in(filename);
 		std::string contents((std::istreambuf_iterator<char>(in)),
 			std::istreambuf_iterator<char>());
-		buffer = contents;
+		buffer = contents+"\n";
 	}
 	catch (const std::exception& e)
 	{

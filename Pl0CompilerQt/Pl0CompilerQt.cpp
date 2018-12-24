@@ -67,11 +67,27 @@ void Pl0CompilerQt::build()
 		return;
 	}
 	WordAnalyzer wordAnalyzer(current_file.toStdString());
-	wordAnalyzer.analyze();
+	try {
+		
+		wordAnalyzer.analyze();
+		qDebug() << "Token num: " << wordAnalyzer.getResult().size() << "\n";
+
+		
+	}
+	catch (std::exception e) {
+		qDebug() << e.what() << "\n";
+		ui.console->append(e.what());
+		return;
+	}
 	GrammarAnalyzer grammarAnalyzer(wordAnalyzer.getResult(), console_stream);
-	qDebug() << "Words num: ";
-	qDebug() << grammarAnalyzer.getResults().size() << "\n";
-	grammarAnalyzer.runCompile();
+	try {		
+		grammarAnalyzer.runCompile();
+	}
+	catch (std::exception e) {
+		qDebug() << e.what() << "\n";
+		ui.console->append(e.what());
+		return;
+	}
 	instructions = grammarAnalyzer.getResults();
 	qDebug() << grammarAnalyzer.getResults().size();
 	ui.tableWidget->setRowCount(instructions.size());
