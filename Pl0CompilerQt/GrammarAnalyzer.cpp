@@ -803,13 +803,13 @@ bool GrammarAnalyzer::test(int line, Word::WordType word_type, Error::ErrorType 
 void GrammarAnalyzer::raiseWrapper(int line, Error::ErrorType errorType)
 {
 	error_count++;
-	Error::raise(line, errorType);
+	Error::raise(line, errorType, log_stream);
 }
 
 void GrammarAnalyzer::raiseWrapper(int line, Error::ErrorType errorType, std::string expectation)
 {
 	error_count++;
-	Error::raise(line, errorType);
+	Error::raise(line, errorType, log_stream);
 	log_stream << "\t" << current_word.name << " read, expect " << expectation << std::endl;
 }
 

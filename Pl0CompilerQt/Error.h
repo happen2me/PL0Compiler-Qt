@@ -39,6 +39,6 @@ public:
 	Error();
 	~Error();
 	static void raise(int line, ErrorType errorType);
-	static void raise(int line, ErrorType errorType, std::ostream error_ostream);
+	static void raise(int line, ErrorType errorType, std::ostream& error_ostream);
 };
 
