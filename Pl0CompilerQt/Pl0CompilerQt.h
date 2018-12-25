@@ -25,6 +25,7 @@ public slots:
 	void build();
 	void buildRun();
 	void promptAbout();
+	void displaySymbolTable();
 
 private:
 	Ui::Pl0CompilerQtClass ui;

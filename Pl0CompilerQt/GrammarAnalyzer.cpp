@@ -767,6 +767,11 @@ void GrammarAnalyzer::printPcodes(std::ostream& out)
 	}
 }
 
+std::vector<Symbol> GrammarAnalyzer::getSymbolTable()
+{
+	return table;
+}
+
 int GrammarAnalyzer::position(std::string identifier, int level)
 {
 	for (int i = table.size() - 1; i >= 0; i--) {

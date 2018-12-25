@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include <iostream>
 #include <QDebug>
+#include "Table.h"
 
 Pl0CompilerQt::Pl0CompilerQt(QWidget *parent)
 	: QMainWindow(parent),
@@ -124,9 +125,8 @@ void Pl0CompilerQt::build()
 		}
 		ui.tableWidget->setVerticalHeaderLabels(labels);
 	}
-	
-	
-	
+	symbol_table = grammarAnalyzer.getSymbolTable();
+	displaySymbolTable();
 }
 
 void Pl0CompilerQt::buildRun()
@@ -152,5 +152,39 @@ void Pl0CompilerQt::buildRun()
 void Pl0CompilerQt::promptAbout()
 {
 	QMessageBox::about(this, "Pl0 Compiler (Qt)", "Author: Yuanchun Shen \nNote: Cant't read from (fake) console yet");
+}
+
+void Pl0CompilerQt::displaySymbolTable()
+{
+	QMainWindow* window = new QMainWindow(this);
+
+	QWidget* wdg = new Table(this);
+	QTableWidget* table = wdg->findChild<QTableWidget*>("tableWidget");
+	QStringList headerLabels;
+	headerLabels << "Type" << "Name" << "Value" << "Level" << "Address";
+	if (table) {
+		table->setColumnCount(5);
+		table->setRowCount(symbol_table.size());
+		table->verticalHeader()->setVisible(false);
+		table->setHorizontalHeaderLabels(headerLabels);
+		for (size_t row = 0; row < symbol_table.size(); row++) {
+			table->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(Symbol::translator[symbol_table[row].type])));
+			table->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(symbol_table[row].name)));
+			if (symbol_table[row].type == Symbol::CONST) {
+				table->setItem(row, 2, new QTableWidgetItem(QString::number(symbol_table[row].val)));
+			}
+			else {
+				table->setItem(row, 3, new QTableWidgetItem(QString::number(symbol_table[row].level)));
+				table->setItem(row, 4, new QTableWidgetItem(QString::number(symbol_table[row].address)));
+			}
+		}
+		window->setWindowTitle("Symbol table");
+		window->setCentralWidget(wdg);
+		window->show();
+	}
+	else
+	{
+		console_stream << "Initial symbol table failed" << endl;
+	}
 }
 

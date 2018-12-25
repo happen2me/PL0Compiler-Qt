@@ -57,6 +57,9 @@
     <ClCompile Include="WordAnalyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Pl0CompilerQt.h">
@@ -65,9 +68,15 @@
     <QtMoc Include="Interpreter.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Table.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="Pl0CompilerQt.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="Table.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

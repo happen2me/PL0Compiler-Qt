@@ -19,6 +19,7 @@ public:
 	bool errorHappened();
 	void printSymbolTable(std::ostream& out);
 	void printPcodes(std::ostream& out);
+	std::vector<Symbol> getSymbolTable();
 
 private:
 	std::stack<Word> word_stack;

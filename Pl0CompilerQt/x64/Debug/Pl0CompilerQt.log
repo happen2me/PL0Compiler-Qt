@@ -1,18 +1,2 @@
-﻿  Moc'ing Pl0CompilerQt.h...
-  Moc'ing Interpreter.h...
-  Rcc'ing Pl0CompilerQt.qrc...
-  Uic'ing Pl0CompilerQt.ui...
-  RCC: Warning: No resources in 'C:\Users\sakamoto\source\repos\Pl0CompilerQt\Pl0CompilerQt\Pl0CompilerQt.qrc'.
-  Error.cpp
-  GrammarAnalyzer.cpp
-  Instruction.cpp
-  Interpreter.cpp
-  main.cpp
-  Pl0CompilerQt.cpp
-  Symbol.cpp
-  Word.cpp
-  WordAnalyzer.cpp
-  moc_Pl0CompilerQt.cpp
-  moc_Interpreter.cpp
-  qrc_Pl0CompilerQt.cpp
+﻿  Pl0CompilerQt.cpp
   Pl0CompilerQt.vcxproj -> C:\Users\sakamoto\source\repos\Pl0CompilerQt\x64\Debug\Pl0CompilerQt.exe
