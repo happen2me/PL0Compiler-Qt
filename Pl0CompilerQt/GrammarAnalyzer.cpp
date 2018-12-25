@@ -156,6 +156,9 @@ void GrammarAnalyzer::SUB_PROC()
 
 	gen(Instruction::OPR, 0, Instruction::OT_RET);
 
+	std::vector<Word::WordType> block_follow = { Word::SP_DOT, Word::SP_SEMICOLON };
+	//jumpRead(block_follow);
+
 	lev = stored_lev;
 }
 
@@ -188,6 +191,8 @@ void GrammarAnalyzer::STATEMENT()
 			REPEAT_STATEMENT();
 		}
 	}
+	std::vector<Word::WordType> statement_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::KW_END };
+	//jumpRead(statement_follow);
 }
 
 //<表达式>::=[+|-]<项>{<加法运算符><项>}
@@ -221,6 +226,8 @@ void GrammarAnalyzer::EXPRESSION()
 			gen(Instruction::OPR, 0, Instruction::OT_SUB);
 		}
 	}
+	std::vector<Word::WordType> expression_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::KW_END, Word::KW_THEN, Word::KW_DO };
+	//jumpRead(expression_follow);
 }
 
 //<条件>::=<表达式><关系运算符><表达式> | odd<表达式>
@@ -312,6 +319,8 @@ void GrammarAnalyzer::FACTOR()
 	else {
 		raiseWrapper(current_word.line, Error::UNEXPECTED);
 	}
+	std::vector<Word::WordType> factor_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::OP_MULTIPLY, Word::OP_DIVIDE, Word::KW_END, Word::KW_THEN, Word::KW_DO };
+	//jumpRead(factor_follow);
 }
 
 //<项>::=<因子>{<乘法运算符><因子>}
@@ -331,6 +340,8 @@ void GrammarAnalyzer::TERM()
 			gen(Instruction::OPR, 0, Instruction::OT_DIV);
 		}
 	}
+	std::vector<Word::WordType> term_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::KW_END, Word::KW_THEN, Word::KW_DO };
+	//jumpRead(term_follow);
 }
 
 //<常量说明部分>::=const <常量定义>{,<常量定义>}
@@ -704,8 +715,9 @@ bool GrammarAnalyzer::checkType(Word::WordType expectedType)
 
 void GrammarAnalyzer::jumpRead(std::vector<Word::WordType>& follow)
 {
-	while (std::find(follow.begin(), follow.end(), current_word.type) != follow.end())
+	while (std::find(follow.begin(), follow.end(), current_word.type) == follow.end() && word_stack.size()>0)
 	{
+		log_stream << "Jumped " << current_word.name << std::endl;
 		read();
 	}
 }
