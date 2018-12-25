@@ -4,8 +4,15 @@
 #include <fstream>
 #include "Error.h"
 
+static std::vector<Word::WordType> rational_operator = {
+	Word::OP_EQUAL,
+	Word::OP_NOT_EQUAL,
+	Word::OP_LESS,
+	Word::OP_LESS_EQUAL,
+	Word::OP_ABOVE,
+	Word::OP_ABOVE_EQUAL };
 
-#define DEBUG 1
+#define DEBUG 0
 #define VERBOSE 0
 
 
@@ -92,7 +99,7 @@ void GrammarAnalyzer::MAIN_PROC()
 {
 	lev = -1;
 	try {
-		SUB_PROC();
+		BLOCK();
 
 		if (!checkType(Word::SP_DOT)) {
 			raiseWrapper(current_word.line, Error::EXPECT_DOT_AT_END);
@@ -113,10 +120,8 @@ void GrammarAnalyzer::MAIN_PROC()
 }
 
 //<分程序>::=[<常量说明部分>][<变量说明部分>][<过程说明部分>]<语句>
-void GrammarAnalyzer::SUB_PROC()
-{
-	std::vector<Word::WordType> follow = {Word::CONST, Word::KW_VAR, Word::KW_PROCEDURE, Word::IDENTIFIER, Word::KW_IF, Word::KW_CALL, Word::KW_BEGIN, Word::KW_WHILE, Word::KW_READ, Word::KW_WRITE};
-	
+void GrammarAnalyzer::BLOCK()
+{	
 	int stored_lev = lev;
 	lev += 1;
 
@@ -158,7 +163,9 @@ void GrammarAnalyzer::SUB_PROC()
 
 	std::vector<Word::WordType> block_follow = { Word::SP_DOT, Word::SP_SEMICOLON };
 	//jumpRead(block_follow);
-
+	if (DEBUG) {
+		log_stream << "Block followed by" << current_word.name << std::endl;
+	}
 	lev = stored_lev;
 }
 
@@ -193,6 +200,8 @@ void GrammarAnalyzer::STATEMENT()
 	}
 	std::vector<Word::WordType> statement_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::KW_END };
 	//jumpRead(statement_follow);
+	if(DEBUG)
+		log_stream << "Statement followed by " << std::endl;
 }
 
 //<表达式>::=[+|-]<项>{<加法运算符><项>}
@@ -227,7 +236,10 @@ void GrammarAnalyzer::EXPRESSION()
 		}
 	}
 	std::vector<Word::WordType> expression_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::KW_END, Word::KW_THEN, Word::KW_DO };
+	expression_follow.insert(expression_follow.end(), rational_operator.begin(), rational_operator.end());
 	//jumpRead(expression_follow);
+	if(DEBUG)
+		log_stream << "Expression followed by " << current_word.name << std::endl;
 }
 
 //<条件>::=<表达式><关系运算符><表达式> | odd<表达式>
@@ -320,7 +332,10 @@ void GrammarAnalyzer::FACTOR()
 		raiseWrapper(current_word.line, Error::UNEXPECTED);
 	}
 	std::vector<Word::WordType> factor_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::OP_MULTIPLY, Word::OP_DIVIDE, Word::KW_END, Word::KW_THEN, Word::KW_DO };
+	factor_follow.insert(factor_follow.end(), rational_operator.begin(), rational_operator.end());
 	//jumpRead(factor_follow);
+	if(DEBUG)
+		log_stream << "Factor followed by: " << current_word.name << std::endl;
 }
 
 //<项>::=<因子>{<乘法运算符><因子>}
@@ -341,7 +356,12 @@ void GrammarAnalyzer::TERM()
 		}
 	}
 	std::vector<Word::WordType> term_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::KW_END, Word::KW_THEN, Word::KW_DO };
+	term_follow.insert(term_follow.end(), rational_operator.begin(), rational_operator.end());
 	//jumpRead(term_follow);
+	if (DEBUG) {
+		log_stream << "Term followed by " << current_word.name << std::endl;
+	}
+	
 }
 
 //<常量说明部分>::=const <常量定义>{,<常量定义>}
@@ -439,7 +459,7 @@ void GrammarAnalyzer::PROCEDURE_DECLARATION()
 		raiseWrapper(current_word.line, Error::MISSING_COMMA_OR_SEMICOLON);
 	}
 
-	SUB_PROC();
+	BLOCK();
 
 	if (checkType(Word::SP_SEMICOLON)) {
 		read();
@@ -715,9 +735,9 @@ bool GrammarAnalyzer::checkType(Word::WordType expectedType)
 
 void GrammarAnalyzer::jumpRead(std::vector<Word::WordType>& follow)
 {
-	while (std::find(follow.begin(), follow.end(), current_word.type) == follow.end() && word_stack.size()>0)
+	while ((std::find(follow.begin(), follow.end(), current_word.type) == follow.end()) && word_stack.size()>0)
 	{
-		log_stream << "Jumped " << current_word.name << std::endl;
+		log_stream << "Jumped " << current_word.name << " at line " << current_word.line << std::endl;
 		read();
 	}
 }

@@ -37,7 +37,7 @@ private:
 	bool read();
 
 	void MAIN_PROC();
-	void SUB_PROC();
+	void BLOCK();
 	void STATEMENT();
 	void EXPRESSION(); //<表达式>::=[+|-]<项>{<加法运算符><项>}
 	void CONDITION();
