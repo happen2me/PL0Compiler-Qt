@@ -112,6 +112,9 @@ void Error::raise(int line, ErrorType errorType, std::ostream& error_ostream)
 	case Error::UNEXPECTED:
 		error_ostream << "unexpected symbol" << std::endl;
 		break;
+	case Error::CONST_DECLARATION_SHOULD_HEAD:
+		error_ostream << "const declaration should be put at first" << std::endl;
+		break;
 	default:
 		break;
 	}

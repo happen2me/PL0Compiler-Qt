@@ -34,7 +34,7 @@ GrammarAnalyzer::GrammarAnalyzer(const std::vector<Word>& wordList) :
 	log_stream(std::cout)
 {
 	for (int i = wordList.size() - 1; i >= 0; i--) {
-		word_stack.push(wordList[i]);
+		word_stack.push(wordList[i]); // copy from wordList
 		if (DEBUG && VERBOSE) {
 			log_stream << "pushed " << word_stack.top().name << std::endl;
 		}
@@ -59,12 +59,12 @@ GrammarAnalyzer::~GrammarAnalyzer()
 {
 }
 
-void GrammarAnalyzer::gen(Instruction::InstructionType type, int l, int m)
+void GrammarAnalyzer::gen(Instruction::InstructionType type, int l, int m) // the function to generate pcode
 {
 	pcodes.push_back(Instruction(type, l, m));
 }
 
-bool GrammarAnalyzer::read()
+bool GrammarAnalyzer::read() // read a word
 {
 	if (!word_stack.empty()) {
 		current_word = word_stack.top();
@@ -111,7 +111,7 @@ void GrammarAnalyzer::MAIN_PROC()
 	}
 
 	if (word_stack.empty()) {
-		log_stream << "\nGrammar Analyze finished" << std::endl;
+		log_stream << "\nGrammar analysis finished" << std::endl;
 	}
 	else {
 		log_stream << "\nThere are still " << word_stack.size() << " words remains in statck" << std::endl;
@@ -129,29 +129,37 @@ void GrammarAnalyzer::BLOCK()
 		raiseWrapper(current_word.line, Error::EXCEED_MAX_LEVEL);
 	}
 
-	int dx = 3;
+	int dx = 3; // data index
 	int stored_tx = getTx();
 	int stored_cx = getCx();
 
 	gen(Instruction::JMP, 0, 0);
 
+	if (current_word.type == Word::KW_CONST) {
+		CONST_DECLARATION();
+	}
+	if (current_word.type == Word::KW_VAR) {
+		VAR_DECLARATION(dx);
+	}
+
 	while (current_word.type == Word::KW_CONST || current_word.type == Word::KW_VAR)
 	{
 		if (current_word.type == Word::KW_CONST) {
+			raiseWrapper(current_word.line, Error::CONST_DECLARATION_SHOULD_HEAD);
 			CONST_DECLARATION();
 		}
-		if (current_word.type == Word::KW_VAR) {
+		else {
 			VAR_DECLARATION(dx);
 		}
-	}	
+	}
 	if (current_word.type == Word::KW_PROCEDURE) {
 		PROCEDURE_DECLARATION();
 	}
 
-	pcodes[stored_cx].m = getCx();
+	pcodes[stored_cx].m = getCx(); // set code address as its m
 
 	if (lev > 0) {
-		table[stored_tx - 1].address = getCx();
+		table[stored_tx - 1].address = getCx();  // set address in symbol table
 	}
 
 
@@ -161,8 +169,8 @@ void GrammarAnalyzer::BLOCK()
 
 	gen(Instruction::OPR, 0, Instruction::OT_RET);
 
-	std::vector<Word::WordType> block_follow = { Word::SP_DOT, Word::SP_SEMICOLON };
-	//jumpRead(block_follow);
+	std::vector<Word::WordType> block_follow = { Word::SP_DOT, Word::SP_SEMICOLON }; // follow block
+	jumpRead(block_follow);
 	if (DEBUG) {
 		log_stream << "Block followed by" << current_word.name << std::endl;
 	}
@@ -199,7 +207,7 @@ void GrammarAnalyzer::STATEMENT()
 		}
 	}
 	std::vector<Word::WordType> statement_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::KW_END };
-	//jumpRead(statement_follow);
+	jumpRead(statement_follow); // read through its follow set
 	if(DEBUG)
 		log_stream << "Statement followed by " << std::endl;
 }
@@ -214,12 +222,12 @@ void GrammarAnalyzer::EXPRESSION()
 	}
 
 	bool neg_start = false;
-	if (current_word.name == "+" || current_word.name == "-") {
+	if (current_word.name == "+" || current_word.name == "-") { // process + or -
 		neg_start = checkType(Word::OP_MINUS);
 		read();
 	}
 	TERM();
-	if (neg_start) {
+	if (neg_start) { // if starts with -, then negate it
 		gen(Instruction::OPR, 0, Instruction::OT_NEG);
 	}
 
@@ -235,9 +243,11 @@ void GrammarAnalyzer::EXPRESSION()
 			gen(Instruction::OPR, 0, Instruction::OT_SUB);
 		}
 	}
-	std::vector<Word::WordType> expression_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::KW_END, Word::KW_THEN, Word::KW_DO };
+	std::vector<Word::WordType> expression_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::KW_END, Word::KW_THEN, Word::KW_DO, Word::SP_COMMA };
 	expression_follow.insert(expression_follow.end(), rational_operator.begin(), rational_operator.end());
-	//jumpRead(expression_follow);
+
+	jumpRead(expression_follow); // read through its follow set
+
 	if(DEBUG)
 		log_stream << "Expression followed by " << current_word.name << std::endl;
 }
@@ -279,7 +289,7 @@ void GrammarAnalyzer::CONDITION()
 			gen(Instruction::OPR, 0, Instruction::OT_GEQ);
 			break;
 		default:
-			if (!current_word.isRetionalOperator()) {
+			if (!current_word.isRetionalOperator()) { // check if user incorrectly uses assign or equal
 				if (checkType(Word::OP_ASSIGN)) {
 					raiseWrapper(current_word.line, Error::USE_EQUAL_INSTEAD_OF_ASSIGN);
 				}
@@ -297,17 +307,17 @@ void GrammarAnalyzer::FACTOR()
 {
 	if (current_word.type == Word::IDENTIFIER) {
 
-		int pos = position(current_word.name, lev);
+		int pos = position(current_word.name, lev); // find word in symbol table
 
 		if (pos == NOT_FOUND) {
 			raiseWrapper(current_word.line, Error::UNDECLARED_IDENTIFIER);
 		}
 		else {
 			if (table[pos].type == Symbol::CONST) {
-				gen(Instruction::LIT, 0, table[pos].val);
+				gen(Instruction::LIT, 0, table[pos].val); // if const, directly put to top
 			}
 			else if (table[pos].type == Symbol::VAR) {
-				gen(Instruction::LOD, lev - table[pos].level, table[pos].address);
+				gen(Instruction::LOD, lev - table[pos].level, table[pos].address); // if var, load
 			}
 			else {
 				raiseWrapper(current_word.line, Error::EXPRESSION_CANNOT_CONTAIN_PROC);
@@ -331,9 +341,9 @@ void GrammarAnalyzer::FACTOR()
 	else {
 		raiseWrapper(current_word.line, Error::UNEXPECTED);
 	}
-	std::vector<Word::WordType> factor_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::OP_MULTIPLY, Word::OP_DIVIDE, Word::KW_END, Word::KW_THEN, Word::KW_DO };
+	std::vector<Word::WordType> factor_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::OP_MULTIPLY, Word::OP_DIVIDE, Word::KW_END, Word::KW_THEN, Word::KW_DO, Word::SP_COLON, Word::SP_COMMA };
 	factor_follow.insert(factor_follow.end(), rational_operator.begin(), rational_operator.end());
-	//jumpRead(factor_follow);
+	jumpRead(factor_follow);  // read through its follow set
 	if(DEBUG)
 		log_stream << "Factor followed by: " << current_word.name << std::endl;
 }
@@ -348,16 +358,16 @@ void GrammarAnalyzer::TERM()
 		read();
 		FACTOR();
 
-		if (is_multiply) {
-			gen(Instruction::OPR, 0, Instruction::OT_MUL);
+		if (is_multiply) { // process multiply or divide
+			gen(Instruction::OPR, 0, Instruction::OT_MUL); 
 		}
 		else {
 			gen(Instruction::OPR, 0, Instruction::OT_DIV);
 		}
 	}
-	std::vector<Word::WordType> term_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::KW_END, Word::KW_THEN, Word::KW_DO };
+	std::vector<Word::WordType> term_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::KW_END, Word::KW_THEN, Word::KW_DO, Word::SP_COLON, Word::SP_COMMA };
 	term_follow.insert(term_follow.end(), rational_operator.begin(), rational_operator.end());
-	//jumpRead(term_follow);
+	jumpRead(term_follow);	// read through its follow set
 	if (DEBUG) {
 		log_stream << "Term followed by " << current_word.name << std::endl;
 	}
@@ -737,7 +747,10 @@ void GrammarAnalyzer::jumpRead(std::vector<Word::WordType>& follow)
 {
 	while ((std::find(follow.begin(), follow.end(), current_word.type) == follow.end()) && word_stack.size()>0)
 	{
-		log_stream << "Jumped " << current_word.name << " at line " << current_word.line << std::endl;
+		if (DEBUG) {
+			log_stream << "Jumped " << current_word.name << " at line " << current_word.line << std::endl;
+		}
+		
 		read();
 	}
 }

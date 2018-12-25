@@ -49,7 +49,7 @@ void Interpreter::run()
 	int time = 0;
 	if(DEBUG)
 		log_ostream << "\nline\top\tl\tm\tpc\tbp\tsp\tstack(before execution)" << std::endl;
-	while (bp != 0 && time < 100) {
+	while (bp != 0 && time < 10000) {
 		time++;
 		fetch();
 		

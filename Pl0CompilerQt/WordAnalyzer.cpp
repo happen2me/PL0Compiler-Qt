@@ -34,7 +34,7 @@ WordAnalyzer::WordAnalyzer() :
 WordAnalyzer::WordAnalyzer(std::string filename) :
 	WordAnalyzer(filename, std::cout)
 {
-
+	// Empty initializer
 }
 
 WordAnalyzer::WordAnalyzer(std::string filename, std::ostream & out_stream) :
@@ -58,7 +58,7 @@ char WordAnalyzer::getchar()
 	}
 	else
 	{
-		ch = '#';
+		ch = '#'; // special symbol for eof
 	}
 	return ch;
 }
@@ -192,9 +192,9 @@ int WordAnalyzer::transNum()
 void WordAnalyzer::error(std::string message, bool fatal)
 {
 	errorCnt++;
-	out << "Token analysis error: ";
-	throw std::exception(message.c_str());
-
+	out << "Token analysis error: " << message << std::endl;
+	readPtr++;
+	//throw std::exception(message.c_str());
 }
 
 void WordAnalyzer::analyze()
@@ -203,7 +203,7 @@ void WordAnalyzer::analyze()
 		try
 		{
 			Word word = identifyWord();
-			if (!word.isEmptyWord()) {
+			if (!word.isEmptyWord()) { //drops it if it's empty
 				results.push_back(word);
 			}
 		}
