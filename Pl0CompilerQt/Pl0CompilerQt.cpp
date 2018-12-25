@@ -5,7 +5,7 @@
 #include <iostream>
 #include <QDebug>
 #include "Table.h"
-
+bool ok_;
 Pl0CompilerQt::Pl0CompilerQt(QWidget *parent)
 	: QMainWindow(parent),
 	buffer(),
@@ -124,6 +124,13 @@ void Pl0CompilerQt::build()
 	symbol_table = grammarAnalyzer.getSymbolTable();
 	//displaySymbolTable();
 	console_stream << wordAnalyzer.getErrorCount() + grammarAnalyzer.getErrorCount() << " error(s) detected" << std::endl;
+
+	if (grammarAnalyzer.getErrorCount() > 0) {
+		ok_ = false;
+	}
+	else {
+		ok_ = true;
+	}
 }
 
 void Pl0CompilerQt::buildRun()
@@ -134,7 +141,7 @@ void Pl0CompilerQt::buildRun()
 	ui.console->insertPlainText("\nStart running\n");
 	ui.console->moveCursor(QTextCursor::End);
 	build();
-	if (instructions.size() > 0) {
+	if (instructions.size() > 0 && ok_) {
 		Interpreter interpreter(instructions, console_stream, ui.console);
 
 		//ofs.close();

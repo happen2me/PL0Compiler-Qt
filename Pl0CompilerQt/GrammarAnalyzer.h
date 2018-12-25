@@ -71,7 +71,7 @@ private:
 	int position(std::string identifier, int level);
 	int getTx();
 	int getCx();
-	bool test(int line, Word::WordType word_type, Error::ErrorType error_type);
+	bool test(int line, Word::WordType word_type, Error::ErrorType error_type); // if current word type doesn't fill expection, raise the error error_type
 	void raiseWrapper(int line, Error::ErrorType errorType);
 	void raiseWrapper(int line, Error::ErrorType errorType, std::string expectation);
 	

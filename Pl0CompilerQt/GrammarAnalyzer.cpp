@@ -152,8 +152,18 @@ void GrammarAnalyzer::BLOCK()
 			VAR_DECLARATION(dx);
 		}
 	}
+
+	//if (lev == 0) {
+	//	while (current_word.type != Word::KW_PROCEDURE && word_stack.size() > 0)
+	//	{
+	//		log_stream << current_word.name << " jumped  " << Word::translator[current_word.type] << std::endl;
+	//		read();
+	//	}
+	//}
+	
 	if (current_word.type == Word::KW_PROCEDURE) {
 		PROCEDURE_DECLARATION();
+
 	}
 
 	pcodes[stored_cx].m = getCx(); // set code address as its m
@@ -172,7 +182,7 @@ void GrammarAnalyzer::BLOCK()
 	std::vector<Word::WordType> block_follow = { Word::SP_DOT, Word::SP_SEMICOLON }; // follow block
 	jumpRead(block_follow);
 	if (DEBUG) {
-		log_stream << "Block followed by" << current_word.name << std::endl;
+		//log_stream << "Block followed by" << current_word.name << std::endl;
 	}
 	lev = stored_lev;
 }
@@ -208,8 +218,8 @@ void GrammarAnalyzer::STATEMENT()
 	}
 	std::vector<Word::WordType> statement_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::KW_END };
 	jumpRead(statement_follow); // read through its follow set
-	if(DEBUG)
-		log_stream << "Statement followed by " << std::endl;
+	//if(DEBUG)
+		//log_stream << "Statement followed by " << std::endl;
 }
 
 //<表达式>::=[+|-]<项>{<加法运算符><项>}
@@ -248,8 +258,8 @@ void GrammarAnalyzer::EXPRESSION()
 
 	jumpRead(expression_follow); // read through its follow set
 
-	if(DEBUG)
-		log_stream << "Expression followed by " << current_word.name << std::endl;
+	/*if(DEBUG)
+		log_stream << "Expression followed by " << current_word.name << std::endl;*/
 }
 
 //<条件>::=<表达式><关系运算符><表达式> | odd<表达式>
@@ -344,8 +354,8 @@ void GrammarAnalyzer::FACTOR()
 	std::vector<Word::WordType> factor_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::OP_MULTIPLY, Word::OP_DIVIDE, Word::KW_END, Word::KW_THEN, Word::KW_DO, Word::SP_COLON, Word::SP_COMMA };
 	factor_follow.insert(factor_follow.end(), rational_operator.begin(), rational_operator.end());
 	jumpRead(factor_follow);  // read through its follow set
-	if(DEBUG)
-		log_stream << "Factor followed by: " << current_word.name << std::endl;
+	/*if(DEBUG)
+		log_stream << "Factor followed by: " << current_word.name << std::endl;*/
 }
 
 //<项>::=<因子>{<乘法运算符><因子>}
@@ -368,9 +378,9 @@ void GrammarAnalyzer::TERM()
 	std::vector<Word::WordType> term_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::KW_END, Word::KW_THEN, Word::KW_DO, Word::SP_COLON, Word::SP_COMMA };
 	term_follow.insert(term_follow.end(), rational_operator.begin(), rational_operator.end());
 	jumpRead(term_follow);	// read through its follow set
-	if (DEBUG) {
-		log_stream << "Term followed by " << current_word.name << std::endl;
-	}
+	//if (DEBUG) {
+	//	log_stream << "Term followed by " << current_word.name << std::endl;
+	//}
 	
 }
 
@@ -585,7 +595,7 @@ void GrammarAnalyzer::WHILE_STATEMENT()
 
 	int jpc_cx = getCx();
 
-	gen(Instruction::JPC, 0, 0);
+	gen(Instruction::JPC, 0, 0); // generate a JPC pcode, its address will be filled later
 
 	//confirm(Word::KW_DO);
 	test(current_word.line, Word::KW_DO, Error::EXPECT_DO);
@@ -606,7 +616,7 @@ void GrammarAnalyzer::CALL_STATEMENT()
 	confirm(Word::KW_CALL);
 	read();
 
-	if (!checkType(Word::IDENTIFIER)) {
+	if (!checkType(Word::IDENTIFIER)) { // it must be identifier
 		raiseWrapper(current_word.line, Error::EXPECT_IDENTIFIER_AFTER_CALL);
 	}
 	else {
@@ -616,7 +626,7 @@ void GrammarAnalyzer::CALL_STATEMENT()
 			raiseWrapper(current_word.line, Error::UNDECLARED_IDENTIFIER);
 		}
 		else if (table[pos].type == Symbol::PROC) {
-			gen(Instruction::CALL, lev - table[pos].level, table[pos].address);
+			gen(Instruction::CALL, lev - table[pos].level, table[pos].address); // set level difference as its l parameter
 		}
 		else {
 			raiseWrapper(current_word.line, Error::CANNOT_CALL_VAR_OR_CONST);
@@ -855,6 +865,7 @@ int GrammarAnalyzer::getCx()
 	return pcodes.size();
 }
 
+// If current word type doesn't fill expection, raise the error error_type
 bool GrammarAnalyzer::test(int line, Word::WordType word_type, Error::ErrorType error_type)
 {
 	if (checkType(word_type)) {
