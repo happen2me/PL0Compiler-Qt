@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <QThread>
 #include <QTextStream>
+#include <QInputDialog>
+#include <QDir>
 
 #define DEBUG 0
 
@@ -72,8 +74,7 @@ void Interpreter::exe()
 {
 	int x;
 	QString word;
-	QTextStream qtin(stdin);
-	QString line;
+	bool ok = false;
 	switch (ir.op)
 	{
 	case Instruction::LIT:
@@ -111,35 +112,20 @@ void Interpreter::exe()
 		//log_ostream << "\033[1;33m";
 		//log_ostream << x << "\033[0m\n" << std::endl;
 		log_ostream << x << std::endl;
-		if (text_edit) {
+		/*if (text_edit) {
 			text_edit->moveCursor(QTextCursor::End);
 			text_edit->insertPlainText(QString::number(x));
 			text_edit->insertPlainText("\n");
 			text_edit->moveCursor(QTextCursor::End);
-		}
-
+		}*/
 		break;
 	case Instruction::RED:
-
-		
-		line = qtin.readLine();  // This is how you read the entire line		
-		qtin >> word;    // This is how you read a word (separated by space) at a time.
-		//std::cin >> x;
-		//line_read = false;
-		//connect(text_edit, SIGNAL(textChanged()), this, SLOT(handleUserInput(const QString&)));
-		//while (!line_read)
-		//{
-		//	QThread::sleep(10);
-		//}
-		bool ok;
-		x = word.toInt(&ok);
-		if (ok) {
-			//x = text_edit->toPlainText().toInt();
-			push(x);
+		while (!ok)
+		{
+			x = QInputDialog::getInt(text_edit, tr("QInputDialog::getInteger()"),
+				tr("Please input a const:"), 0, 0, 100000, 1, &ok);
 		}
-		else {
-			log_ostream << "Error input" << std::endl;
-		}
+		push(x);
 		break;
 	default:
 		log_ostream << "undefined operater type" << std::endl;

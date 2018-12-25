@@ -1,6 +1,7 @@
 #include "WordAnalyzer.h"
 #include <exception>
 #include <iostream>
+#define DEBUG 1
 
 std::map<std::string, Word::WordType> WordAnalyzer::reserved_word_map = {
 	{"begin", Word::KW_BEGIN},
@@ -25,16 +26,25 @@ std::vector<std::string> WordAnalyzer::reserved_words = { "begin", "end", "if", 
 
 std::vector<std::string> WordAnalyzer::types_name = { "IDENTIFIER",	"RESERVED",	"CONST", "UNARY_OPERATOR", "BINARY_OPERATOR", "SEPERATOR" };
 
-WordAnalyzer::WordAnalyzer()
+WordAnalyzer::WordAnalyzer() :
+	out(std::cout)
 {
 }
 
 WordAnalyzer::WordAnalyzer(std::string filename) :
+	WordAnalyzer(filename, std::cout)
+{
+
+}
+
+WordAnalyzer::WordAnalyzer(std::string filename, std::ostream & out_stream) :
 	ch(' '),
 	token(""),
 	num(0),
 	readPtr(0),
-	line_counter(1)
+	line_counter(1),
+	out(out_stream),
+	errorCnt(0)
 {
 	readFile(filename);
 }
@@ -179,9 +189,12 @@ int WordAnalyzer::transNum()
 	return std::stoi(token);
 }
 
-void WordAnalyzer::error(std::string message)
+void WordAnalyzer::error(std::string message, bool fatal)
 {
+	errorCnt++;
+	out << "Token analysis error: ";
 	throw std::exception(message.c_str());
+
 }
 
 void WordAnalyzer::analyze()
@@ -196,7 +209,10 @@ void WordAnalyzer::analyze()
 		}
 		catch (const std::exception& e)
 		{
-			std::cerr << e.what() << std::endl;
+			out << e.what() << std::endl;
+		}
+		if (DEBUG) {
+			//out << "token=" << token << " readPtr=" << readPtr << " ch=" <<  ch << std::endl;
 		}
 
 	}
@@ -238,6 +254,11 @@ void WordAnalyzer::printResult(std::ostream& out) {
 	}
 }
 
+int WordAnalyzer::getErrorCount()
+{
+	return errorCnt;
+}
+
 void WordAnalyzer::readFile(std::string filename)
 {
 	if (!fileExits(filename)) {
@@ -248,11 +269,12 @@ void WordAnalyzer::readFile(std::string filename)
 		std::ifstream in(filename);
 		std::string contents((std::istreambuf_iterator<char>(in)),
 			std::istreambuf_iterator<char>());
-		buffer = contents+"\n";
+		buffer = contents;
+		buffer += "\n";
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
+		out << e.what() << std::endl;
 	}
 }
 
@@ -292,7 +314,7 @@ Word WordAnalyzer::identifyWord()
 				getchar();
 			}
 			retract();
-			error("Identifier should not start with digit; at line " + line_counter);
+			error("Identifier should not start with digit; at line " + std::to_string(line_counter));
 			return Word();
 		}
 		retract();
@@ -444,9 +466,12 @@ Word WordAnalyzer::identifyWord()
 		symbol = Word::SP_DOT; // .
 
 	}
+	else if (ch == '#') {
+		return Word();
+	}
 	else
 	{
-		error("Not match at line " + line_counter);
+		error("Not match at line " + std::to_string(line_counter));
 	}
 
 	return Word(line_counter, token, symbol);

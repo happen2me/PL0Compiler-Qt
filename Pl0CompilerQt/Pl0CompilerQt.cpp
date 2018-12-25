@@ -66,80 +66,87 @@ void Pl0CompilerQt::build()
 		QMessageBox::information(this, tr("Build Error"), tr("Failed to save file"));
 		return;
 	}
-	WordAnalyzer wordAnalyzer(current_file.toStdString());
-	try {
-		
-		wordAnalyzer.analyze();
-		qDebug() << "Token num: " << wordAnalyzer.getResult().size() << "\n";
-
-		
-	}
-	catch (std::exception e) {
-		qDebug() << e.what() << "\n";
-		ui.console->append(e.what());
-		return;
-	}
-	GrammarAnalyzer grammarAnalyzer(wordAnalyzer.getResult(), console_stream);
+	WordAnalyzer wordAnalyzer(current_file.toStdString(), console_stream);
 	try {		
-		grammarAnalyzer.runCompile();
+		wordAnalyzer.analyze();
+		qDebug() << "Token num: " << wordAnalyzer.getResult().size() << "\n";		
 	}
 	catch (std::exception e) {
 		qDebug() << e.what() << "\n";
 		ui.console->append(e.what());
 		return;
 	}
-	instructions = grammarAnalyzer.getResults();
-	qDebug() << grammarAnalyzer.getResults().size();
-	ui.tableWidget->setRowCount(instructions.size());
-	QStringList labels;
-	for (unsigned int i = 0; i < instructions.size(); i++) {
-		labels << QString::number(i);
-		for (unsigned int column = 0; column < 3; column++) {			
-			QTableWidgetItem* newItem = new QTableWidgetItem();
-			switch (column)
-			{
-			case 0:
-				newItem->setText(QString::fromStdString(Instruction::translator[instructions[i].op]));
-				ui.tableWidget->setItem(i, column, newItem);
-				break;
-			case 1:
-				newItem->setText(QString::number(instructions[i].l));
-				ui.tableWidget->setItem(i, column, newItem);
-				break;
-			case 2:
-				if(instructions[i].op == Instruction::OPR)
-					newItem->setText(QString::fromStdString(Instruction::op_translator[(Instruction::OperationType)instructions[i].m]));
-				else
-					newItem->setText(QString::number(instructions[i].m));
-				ui.tableWidget->setItem(i, column, newItem);
-				break;
-			default:
-				break;
-			}
-			
-		}
+
+	GrammarAnalyzer grammarAnalyzer(wordAnalyzer.getResult(), console_stream);
+	if (wordAnalyzer.getErrorCount() != 0) {
+		ui.console->append(QString::number(wordAnalyzer.getErrorCount()) + " detected in word analysis");
 	}
-	ui.tableWidget->setVerticalHeaderLabels(labels);
+	else {
+		try {
+			grammarAnalyzer.runCompile();
+		}
+		catch (std::exception e) {
+			qDebug() << e.what() << "\n";
+			ui.console->append(e.what());
+			return;
+		}
+
+		instructions = grammarAnalyzer.getResults();
+		qDebug() << grammarAnalyzer.getResults().size();
+		ui.tableWidget->setRowCount(instructions.size());
+		QStringList labels;
+		for (unsigned int i = 0; i < instructions.size(); i++) {
+			labels << QString::number(i);
+			for (unsigned int column = 0; column < 3; column++) {
+				QTableWidgetItem* newItem = new QTableWidgetItem();
+				switch (column)
+				{
+				case 0:
+					newItem->setText(QString::fromStdString(Instruction::translator[instructions[i].op]));
+					ui.tableWidget->setItem(i, column, newItem);
+					break;
+				case 1:
+					newItem->setText(QString::number(instructions[i].l));
+					ui.tableWidget->setItem(i, column, newItem);
+					break;
+				case 2:
+					if (instructions[i].op == Instruction::OPR)
+						newItem->setText(QString::fromStdString(Instruction::op_translator[(Instruction::OperationType)instructions[i].m]));
+					else
+						newItem->setText(QString::number(instructions[i].m));
+					ui.tableWidget->setItem(i, column, newItem);
+					break;
+				default:
+					break;
+				}
+
+			}
+		}
+		ui.tableWidget->setVerticalHeaderLabels(labels);
+	}
+	
+	
+	
 }
 
 void Pl0CompilerQt::buildRun()
 {
-	std::ofstream ofs("output/log.txt", std::ofstream::out);
+	//std::ofstream ofs("output/log.txt", std::ofstream::out);
 
 	ui.console->moveCursor(QTextCursor::End);
 	ui.console->insertPlainText("Start running\n");
 	ui.console->moveCursor(QTextCursor::End);
 	build();
-	Interpreter interpreter(instructions, console_stream, ui.console);
+	if (instructions.size() > 0) {
+		Interpreter interpreter(instructions, console_stream, ui.console);
 
-	ofs.close();
-	std::cout << "";
-	interpreter.run();
-	ui.console->moveCursor(QTextCursor::End);
-	ui.console->insertPlainText("Program exits.\n");
-	ui.console->moveCursor(QTextCursor::End);
-	
-	
+		//ofs.close();
+		std::cout << "";
+		interpreter.run();
+		ui.console->moveCursor(QTextCursor::End);
+		ui.console->insertPlainText("Program exits.\n");
+		ui.console->moveCursor(QTextCursor::End);
+	}	
 }
 
 void Pl0CompilerQt::promptAbout()
