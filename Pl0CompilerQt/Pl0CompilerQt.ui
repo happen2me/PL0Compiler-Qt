@@ -163,9 +163,16 @@
     </property>
     <addaction name="action_About"/>
    </widget>
+   <widget class="QMenu" name="menu_View">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="action_Show_Symbol_Table"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menu_Run"/>
+   <addaction name="menu_View"/>
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -235,6 +242,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="action_Show_Symbol_Table">
+   <property name="text">
+    <string>&amp;Show Symbol Table</string>
    </property>
   </action>
  </widget>
@@ -371,6 +383,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_Show_Symbol_Table</sender>
+   <signal>triggered()</signal>
+   <receiver>Pl0CompilerQtClass</receiver>
+   <slot>displaySymbolTable()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>474</x>
+     <y>356</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -378,5 +406,6 @@
   <slot>build()</slot>
   <slot>buildRun()</slot>
   <slot>promptAbout()</slot>
+  <slot>displaySymbolTable()</slot>
  </slots>
 </ui>

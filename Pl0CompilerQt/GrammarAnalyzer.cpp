@@ -115,6 +115,8 @@ void GrammarAnalyzer::MAIN_PROC()
 //<分程序>::=[<常量说明部分>][<变量说明部分>][<过程说明部分>]<语句>
 void GrammarAnalyzer::SUB_PROC()
 {
+	std::vector<Word::WordType> follow = {Word::CONST, Word::KW_VAR, Word::KW_PROCEDURE, Word::IDENTIFIER, Word::KW_IF, Word::KW_CALL, Word::KW_BEGIN, Word::KW_WHILE, Word::KW_READ, Word::KW_WRITE};
+	
 	int stored_lev = lev;
 	lev += 1;
 
@@ -128,12 +130,15 @@ void GrammarAnalyzer::SUB_PROC()
 
 	gen(Instruction::JMP, 0, 0);
 
-	if (current_word.type == Word::KW_CONST) {
-		CONST_DECLARATION();
-	}
-	if (current_word.type == Word::KW_VAR) {
-		VAR_DECLARATION(dx);
-	}
+	while (current_word.type == Word::KW_CONST || current_word.type == Word::KW_VAR)
+	{
+		if (current_word.type == Word::KW_CONST) {
+			CONST_DECLARATION();
+		}
+		if (current_word.type == Word::KW_VAR) {
+			VAR_DECLARATION(dx);
+		}
+	}	
 	if (current_word.type == Word::KW_PROCEDURE) {
 		PROCEDURE_DECLARATION();
 	}
@@ -697,6 +702,14 @@ bool GrammarAnalyzer::checkType(Word::WordType expectedType)
 	return current_word.type == expectedType;
 }
 
+void GrammarAnalyzer::jumpRead(std::vector<Word::WordType>& follow)
+{
+	while (std::find(follow.begin(), follow.end(), current_word.type) != follow.end())
+	{
+		read();
+	}
+}
+
 void GrammarAnalyzer::enter(Symbol::SymbolType type, std::string name, int value)
 {
 	table.push_back(Symbol(type, name, value));
@@ -770,6 +783,11 @@ void GrammarAnalyzer::printPcodes(std::ostream& out)
 std::vector<Symbol> GrammarAnalyzer::getSymbolTable()
 {
 	return table;
+}
+
+int GrammarAnalyzer::getErrorCount()
+{
+	return error_count;
 }
 
 int GrammarAnalyzer::position(std::string identifier, int level)

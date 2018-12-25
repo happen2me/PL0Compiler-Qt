@@ -11,10 +11,7 @@ Pl0CompilerQt::Pl0CompilerQt(QWidget *parent)
 	buffer(),
 	console_stream(&buffer)
 {
-
-
 	ui.setupUi(this);
-	//console_stream << "TEST" << std::flush;
 	buffer.setConsole(ui.console);
 }
 
@@ -126,7 +123,8 @@ void Pl0CompilerQt::build()
 		ui.tableWidget->setVerticalHeaderLabels(labels);
 	}
 	symbol_table = grammarAnalyzer.getSymbolTable();
-	displaySymbolTable();
+	//displaySymbolTable();
+	console_stream << wordAnalyzer.getErrorCount() + grammarAnalyzer.getErrorCount() << " error(s) detected" << std::endl;
 }
 
 void Pl0CompilerQt::buildRun()

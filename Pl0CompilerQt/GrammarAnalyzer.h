@@ -20,6 +20,7 @@ public:
 	void printSymbolTable(std::ostream& out);
 	void printPcodes(std::ostream& out);
 	std::vector<Symbol> getSymbolTable();
+	int getErrorCount();
 
 private:
 	std::stack<Word> word_stack;
@@ -59,6 +60,7 @@ private:
 	bool confirm(Word::WordType expectedType);
 	bool confirmName(std::string expectedVal);
 	bool checkType(Word::WordType expectedType);
+	void jumpRead(std::vector<Word::WordType>& follow);
 
 	/*For translate*/
 	void enter(Symbol::SymbolType type, std::string name, int value); // enter const
@@ -72,5 +74,6 @@ private:
 	bool test(int line, Word::WordType word_type, Error::ErrorType error_type);
 	void raiseWrapper(int line, Error::ErrorType errorType);
 	void raiseWrapper(int line, Error::ErrorType errorType, std::string expectation);
+	
 };
 

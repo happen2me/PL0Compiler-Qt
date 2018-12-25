@@ -38,6 +38,7 @@ public:
     QAction *action_Clear;
     QAction *actionUndo;
     QAction *actionRedo;
+    QAction *action_Show_Symbol_Table;
     QWidget *centralWidget;
     QGridLayout *gridLayout_2;
     QGridLayout *gridLayout;
@@ -51,6 +52,7 @@ public:
     QMenu *menu_Edit;
     QMenu *menu_Run;
     QMenu *menu_Help;
+    QMenu *menu_View;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -77,6 +79,8 @@ public:
         actionUndo->setObjectName(QString::fromUtf8("actionUndo"));
         actionRedo = new QAction(Pl0CompilerQtClass);
         actionRedo->setObjectName(QString::fromUtf8("actionRedo"));
+        action_Show_Symbol_Table = new QAction(Pl0CompilerQtClass);
+        action_Show_Symbol_Table->setObjectName(QString::fromUtf8("action_Show_Symbol_Table"));
         centralWidget = new QWidget(Pl0CompilerQtClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout_2 = new QGridLayout(centralWidget);
@@ -162,6 +166,8 @@ public:
         menu_Run->setObjectName(QString::fromUtf8("menu_Run"));
         menu_Help = new QMenu(menuBar);
         menu_Help->setObjectName(QString::fromUtf8("menu_Help"));
+        menu_View = new QMenu(menuBar);
+        menu_View->setObjectName(QString::fromUtf8("menu_View"));
         Pl0CompilerQtClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(Pl0CompilerQtClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -173,6 +179,7 @@ public:
         menuBar->addAction(menu_File->menuAction());
         menuBar->addAction(menu_Edit->menuAction());
         menuBar->addAction(menu_Run->menuAction());
+        menuBar->addAction(menu_View->menuAction());
         menuBar->addAction(menu_Help->menuAction());
         menu_File->addAction(action_Open);
         menu_File->addAction(action_Save);
@@ -183,6 +190,7 @@ public:
         menu_Run->addAction(action_Run);
         menu_Run->addAction(action_Build);
         menu_Help->addAction(action_About);
+        menu_View->addAction(action_Show_Symbol_Table);
 
         retranslateUi(Pl0CompilerQtClass);
         QObject::connect(actionUndo, SIGNAL(triggered()), textEdit, SLOT(undo()));
@@ -193,6 +201,7 @@ public:
         QObject::connect(action_Build, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(build()));
         QObject::connect(action_Run, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(buildRun()));
         QObject::connect(action_About, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(promptAbout()));
+        QObject::connect(action_Show_Symbol_Table, SIGNAL(triggered()), Pl0CompilerQtClass, SLOT(displaySymbolTable()));
 
         QMetaObject::connectSlotsByName(Pl0CompilerQtClass);
     } // setupUi
@@ -224,6 +233,7 @@ public:
 #ifndef QT_NO_SHORTCUT
         actionRedo->setShortcut(QApplication::translate("Pl0CompilerQtClass", "Ctrl+R", nullptr));
 #endif // QT_NO_SHORTCUT
+        action_Show_Symbol_Table->setText(QApplication::translate("Pl0CompilerQtClass", "&Show Symbol Table", nullptr));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("Pl0CompilerQtClass", "OP", nullptr));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
@@ -234,6 +244,7 @@ public:
         menu_Edit->setTitle(QApplication::translate("Pl0CompilerQtClass", "&Edit", nullptr));
         menu_Run->setTitle(QApplication::translate("Pl0CompilerQtClass", "&Run", nullptr));
         menu_Help->setTitle(QApplication::translate("Pl0CompilerQtClass", "&Help", nullptr));
+        menu_View->setTitle(QApplication::translate("Pl0CompilerQtClass", "&View", nullptr));
     } // retranslateUi
 
 };
