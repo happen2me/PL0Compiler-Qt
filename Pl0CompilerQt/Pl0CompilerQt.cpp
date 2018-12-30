@@ -155,7 +155,7 @@ void Pl0CompilerQt::buildRun()
 
 void Pl0CompilerQt::promptAbout()
 {
-	QMessageBox::about(this, "Pl0 Compiler (Qt)", "Author: Yuanchun Shen \nNote: Cant't read from (fake) console yet");
+	QMessageBox::about(this, "Pl0 Compiler (Qt)", "Author: Yuanchun Shen");
 }
 
 void Pl0CompilerQt::displaySymbolTable()

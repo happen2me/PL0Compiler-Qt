@@ -181,8 +181,8 @@ void GrammarAnalyzer::BLOCK()
 
 	std::vector<Word::WordType> block_follow = { Word::SP_DOT, Word::SP_SEMICOLON }; // follow block
 	jumpRead(block_follow);
-	if (DEBUG) {
-		//log_stream << "Block followed by" << current_word.name << std::endl;
+	if (DEBUG && VERBOSE) {
+		log_stream << "Block followed by" << current_word.name << std::endl;
 	}
 	lev = stored_lev;
 }
@@ -218,8 +218,8 @@ void GrammarAnalyzer::STATEMENT()
 	}
 	std::vector<Word::WordType> statement_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::KW_END };
 	jumpRead(statement_follow); // read through its follow set
-	//if(DEBUG)
-		//log_stream << "Statement followed by " << std::endl;
+	if(DEBUG && VERBOSE)
+		log_stream << "Statement followed by " << std::endl;
 }
 
 //<表达式>::=[+|-]<项>{<加法运算符><项>}
@@ -258,8 +258,8 @@ void GrammarAnalyzer::EXPRESSION()
 
 	jumpRead(expression_follow); // read through its follow set
 
-	/*if(DEBUG)
-		log_stream << "Expression followed by " << current_word.name << std::endl;*/
+	if(DEBUG && VERBOSE)
+		log_stream << "Expression followed by " << current_word.name << std::endl;
 }
 
 //<条件>::=<表达式><关系运算符><表达式> | odd<表达式>
@@ -354,8 +354,8 @@ void GrammarAnalyzer::FACTOR()
 	std::vector<Word::WordType> factor_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::OP_MULTIPLY, Word::OP_DIVIDE, Word::KW_END, Word::KW_THEN, Word::KW_DO, Word::SP_COLON, Word::SP_COMMA };
 	factor_follow.insert(factor_follow.end(), rational_operator.begin(), rational_operator.end());
 	jumpRead(factor_follow);  // read through its follow set
-	/*if(DEBUG)
-		log_stream << "Factor followed by: " << current_word.name << std::endl;*/
+	if(DEBUG && VERBOSE)
+		log_stream << "Factor followed by: " << current_word.name << std::endl;
 }
 
 //<项>::=<因子>{<乘法运算符><因子>}
@@ -378,9 +378,9 @@ void GrammarAnalyzer::TERM()
 	std::vector<Word::WordType> term_follow = { Word::SP_DOT, Word::SP_SEMICOLON, Word::SP_RIGHT_PAR, Word::OP_PLUS, Word::Word::OP_MINUS, Word::KW_END, Word::KW_THEN, Word::KW_DO, Word::SP_COLON, Word::SP_COMMA };
 	term_follow.insert(term_follow.end(), rational_operator.begin(), rational_operator.end());
 	jumpRead(term_follow);	// read through its follow set
-	//if (DEBUG) {
-	//	log_stream << "Term followed by " << current_word.name << std::endl;
-	//}
+	if (DEBUG && VERBOSE) {
+		log_stream << "Term followed by " << current_word.name << std::endl;
+	}
 	
 }
 
